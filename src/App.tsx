@@ -10,14 +10,19 @@ function App() {
   const [showChat, setShowChat] = useState(false)
   
   // User configurable values (will come from settings/database later)
+  const startingValue = 400000 // Initial portfolio value
   const currentValue = 400000 // TODO: Make this dynamic from settings
   const goalValue = 1100000 // TODO: Make this dynamic from settings
   const taxRate = 0.25 // 25% estimated tax rate
+  const realizedGains = 12500 // Placeholder for realized gains
+  
+  // Calculate total value including realized gains
+  const totalValue = currentValue + realizedGains
   
   // Calculate progress percentages
-  const progressPercent = ((currentValue / goalValue) * 100).toFixed(0)
-  const taxImpact = currentValue * taxRate
-  const afterTaxValue = currentValue - taxImpact
+  const progressPercent = ((totalValue / goalValue) * 100).toFixed(0)
+  const taxImpact = totalValue * taxRate
+  const afterTaxValue = totalValue - taxImpact
   const afterTaxPercent = ((afterTaxValue / goalValue) * 100).toFixed(0)
 
   // Mock data for now
@@ -93,13 +98,12 @@ function App() {
                 className="absolute top-0 left-0 bg-gradient-to-r from-primary to-green-500 h-full flex items-center justify-center font-bold text-sm"
                 style={{ width: `${progressPercent}%` }}
               >
-                ${(currentValue / 1000).toFixed(0)}K / ${(goalValue / 1000).toFixed(0)}K
+                ${(totalValue / 1000).toFixed(0)}K / ${(goalValue / 1000).toFixed(0)}K
               </div>
             </div>
             <div className="flex justify-between mt-2 text-xs text-muted">
-              <span>Current: ${currentValue.toLocaleString()}</span>
+              <span>Start: ${startingValue.toLocaleString()}</span>
               <span>{progressPercent}% to goal</span>
-              <span>After tax: {afterTaxPercent}%</span>
               <span>Target: ${goalValue.toLocaleString()}</span>
             </div>
           </div>
@@ -136,14 +140,14 @@ function App() {
             <div className="text-sm text-success mt-1">+11.8%</div>
           </div>
           <div className="bg-card border border-border rounded-lg p-4 text-center">
-            <div className="text-xs text-muted mb-2">Tax Impact</div>
-            <div className="text-2xl font-bold">-$8,450</div>
-            <div className="text-sm text-error mt-1">Short-term</div>
+            <div className="text-xs text-muted mb-2">Realized Gains</div>
+            <div className="text-2xl font-bold">$12,500</div>
+            <div className="text-sm text-success mt-1">+3.1%</div>
           </div>
           <div className="bg-card border border-border rounded-lg p-4 text-center">
-            <div className="text-xs text-muted mb-2">Next Milestone</div>
-            <div className="text-2xl font-bold">$500K</div>
-            <div className="text-sm text-muted mt-1">$100K away</div>
+            <div className="text-xs text-muted mb-2">Tax Impact</div>
+            <div className="text-2xl font-bold">-$103,125</div>
+            <div className="text-sm text-error mt-1">25% rate</div>
           </div>
         </div>
 
