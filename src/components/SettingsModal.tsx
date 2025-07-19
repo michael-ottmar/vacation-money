@@ -23,6 +23,27 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 
         {/* Settings Groups */}
         <div className="space-y-6">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block mb-2 text-muted text-sm">Current Portfolio Value</label>
+              <input 
+                type="number" 
+                className="w-full bg-card-hover border border-border-light text-white p-2.5 rounded-md"
+                defaultValue="400000"
+                step="1000"
+              />
+            </div>
+            <div>
+              <label className="block mb-2 text-muted text-sm">Goal Target</label>
+              <input 
+                type="number" 
+                className="w-full bg-card-hover border border-border-light text-white p-2.5 rounded-md"
+                defaultValue="1100000"
+                step="10000"
+              />
+            </div>
+          </div>
+
           <div>
             <label className="block mb-2 text-muted text-sm">Risk Tolerance</label>
             <select className="w-full bg-card-hover border border-border-light text-white p-2.5 rounded-md">
@@ -47,6 +68,15 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               type="text" 
               className="w-full bg-card-hover border border-border-light text-white p-2.5 rounded-md"
               defaultValue="40%"
+            />
+          </div>
+
+          <div>
+            <label className="block mb-2 text-muted text-sm">Estimated Tax Rate</label>
+            <input 
+              type="text" 
+              className="w-full bg-card-hover border border-border-light text-white p-2.5 rounded-md"
+              defaultValue="25%"
             />
           </div>
 

@@ -8,6 +8,17 @@ import { SettingsModal } from './components/SettingsModal'
 function App() {
   const [showSettings, setShowSettings] = useState(false)
   const [showChat, setShowChat] = useState(false)
+  
+  // User configurable values (will come from settings/database later)
+  const [currentValue, setCurrentValue] = useState(400000)
+  const [goalValue, setGoalValue] = useState(1100000)
+  const taxRate = 0.25 // 25% estimated tax rate
+  
+  // Calculate progress percentages
+  const progressPercent = ((currentValue / goalValue) * 100).toFixed(0)
+  const taxImpact = currentValue * taxRate
+  const afterTaxValue = currentValue - taxImpact
+  const afterTaxPercent = ((afterTaxValue / goalValue) * 100).toFixed(0)
 
   // Mock data for now
   const positions = [
@@ -67,35 +78,49 @@ function App() {
       <div className="max-w-[1400px] mx-auto p-5">
         {/* Header */}
         <header className="flex items-center justify-between mb-8 pb-5 border-b border-border-light">
-          <div>
-            <h1 className="text-2xl font-bold">Portfolio Tracker</h1>
-            <p className="text-sm text-muted">Transform $400K → $1.1M</p>
-          </div>
+          <h1 className="text-2xl font-bold">Portfolio Tracker</h1>
           
           {/* Progress Bar */}
-          <div className="flex-1 mx-8">
-            <div className="bg-card-hover h-10 rounded-full overflow-hidden relative">
+          <div className="flex-1 mx-8 max-w-2xl">
+            <div className="bg-card-hover h-8 rounded-full overflow-hidden relative">
+              {/* Tax adjusted progress (darker) */}
               <div 
-                className="bg-gradient-to-r from-primary to-green-500 h-full flex items-center justify-center font-bold"
-                style={{ width: '36%' }}
+                className="absolute top-0 left-0 bg-gray-700 h-full"
+                style={{ width: `${afterTaxPercent}%` }}
+              />
+              {/* Actual progress */}
+              <div 
+                className="absolute top-0 left-0 bg-gradient-to-r from-primary to-green-500 h-full flex items-center justify-center font-bold text-sm"
+                style={{ width: `${progressPercent}%` }}
               >
-                $400K / $1.1M
+                ${(currentValue / 1000).toFixed(0)}K / ${(goalValue / 1000).toFixed(0)}K
               </div>
             </div>
-            <div className="flex justify-between mt-2 text-sm text-muted">
-              <span>Current: $400,000</span>
-              <span>36% to goal</span>
-              <span>Target: $1,100,000</span>
+            <div className="flex justify-between mt-2 text-xs text-muted">
+              <span>Current: ${currentValue.toLocaleString()}</span>
+              <span>{progressPercent}% to goal</span>
+              <span>After tax: {afterTaxPercent}%</span>
+              <span>Target: ${goalValue.toLocaleString()}</span>
             </div>
           </div>
           
-          <button 
-            onClick={() => setShowSettings(true)}
-            className="bg-card-hover border border-border-light text-white px-5 py-2.5 rounded-lg cursor-pointer transition-all hover:bg-[#262626] hover:border-border-lighter flex items-center gap-2"
-          >
-            <Settings className="w-4 h-4" />
-            Settings
-          </button>
+          {/* Action Buttons */}
+          <div className="flex gap-3">
+            <button 
+              onClick={() => setShowChat(true)}
+              className="bg-card-hover border border-border-light text-white px-4 py-2 rounded-lg cursor-pointer transition-all hover:bg-[#262626] hover:border-border-lighter flex items-center gap-2"
+            >
+              <MessageCircle className="w-4 h-4" />
+              Claude Assistant
+            </button>
+            <button 
+              onClick={() => setShowSettings(true)}
+              className="bg-card-hover border border-border-light text-white px-4 py-2 rounded-lg cursor-pointer transition-all hover:bg-[#262626] hover:border-border-lighter flex items-center gap-2"
+            >
+              <Settings className="w-4 h-4" />
+              Settings
+            </button>
+          </div>
         </header>
 
         {/* Stats Grid */}
@@ -169,14 +194,6 @@ function App() {
         </div>
       </div>
 
-      {/* Chat Toggle Button */}
-      <button 
-        onClick={() => setShowChat(true)}
-        className="fixed bottom-5 right-5 bg-card-hover border border-border-light text-white px-5 py-2.5 rounded-lg cursor-pointer transition-all hover:bg-[#262626] hover:border-border-lighter flex items-center gap-2"
-      >
-        <MessageCircle className="w-4 h-4" />
-        Claude Assistant
-      </button>
 
       {/* Modals */}
       <ChatPanel isOpen={showChat} onClose={() => setShowChat(false)} />
