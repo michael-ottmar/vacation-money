@@ -4,10 +4,12 @@ import { PositionCard } from './components/PositionCard'
 import { WatchlistItem } from './components/WatchlistItem'
 import { ChatPanel } from './components/ChatPanel'
 import { SettingsModal } from './components/SettingsModal'
+import { cn } from './lib/utils'
 
 function App() {
   const [showSettings, setShowSettings] = useState(false)
   const [showChat, setShowChat] = useState(false)
+  const [activeTab, setActiveTab] = useState<'active' | 'history'>('active')
   
   // User configurable values (will come from settings/database later)
   const startingValue = 400000 // Initial portfolio value
@@ -76,6 +78,38 @@ function App() {
   const upcomingIPOs = [
     { symbol: 'Anduril', trigger: 'Defense Tech | Q4 2025?', isAiSuggested: true },
     { symbol: 'Databricks', trigger: 'AI/Data | 2025', isAiSuggested: true }
+  ]
+  
+  // Mock closed positions for history tab
+  const closedPositions = [
+    {
+      symbol: 'BTC',
+      price: 65000,
+      change: 0,
+      costBasis: 42000,
+      quantity: 0.5,
+      totalValue: 32500,
+      gain: 11500,
+      gainPercent: 54.8,
+      stopLoss: -20,
+      takeProfit: 50,
+      closedDate: '2024-03-15',
+      closedPrice: 65000
+    },
+    {
+      symbol: 'TSLA',
+      price: 180,
+      change: 0,
+      costBasis: 220,
+      quantity: 50,
+      totalValue: 9000,
+      gain: -2000,
+      gainPercent: -18.2,
+      stopLoss: -15,
+      takeProfit: 30,
+      closedDate: '2024-02-28',
+      closedPrice: 180
+    }
   ]
 
   return (
@@ -153,19 +187,65 @@ function App() {
 
         {/* Main Grid */}
         <div className="grid grid-cols-[1fr_300px] gap-8">
-          {/* Active Positions */}
+          {/* Positions Section */}
           <div className="bg-card border border-border rounded-xl p-5">
             <div className="flex justify-between items-center mb-5">
-              <h2 className="text-xl font-bold">Active Positions</h2>
-              <button className="bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-md text-sm flex items-center gap-1">
-                <Plus className="w-4 h-4" />
-                Add Position
-              </button>
+              <div className="flex gap-4">
+                <button
+                  onClick={() => setActiveTab('active')}
+                  className={cn(
+                    "text-lg font-bold pb-2 border-b-2 transition-colors",
+                    activeTab === 'active' 
+                      ? "border-primary text-white" 
+                      : "border-transparent text-muted hover:text-white"
+                  )}
+                >
+                  Active Positions
+                </button>
+                <button
+                  onClick={() => setActiveTab('history')}
+                  className={cn(
+                    "text-lg font-bold pb-2 border-b-2 transition-colors",
+                    activeTab === 'history' 
+                      ? "border-primary text-white" 
+                      : "border-transparent text-muted hover:text-white"
+                  )}
+                >
+                  History
+                </button>
+              </div>
+              {activeTab === 'active' && (
+                <button className="bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-md text-sm flex items-center gap-1">
+                  <Plus className="w-4 h-4" />
+                  Add Position
+                </button>
+              )}
             </div>
             
-            {positions.map((position) => (
-              <PositionCard key={position.symbol} {...position} />
-            ))}
+            {activeTab === 'active' ? (
+              <div>
+                {positions.map((position) => (
+                  <PositionCard key={position.symbol} {...position} />
+                ))}
+              </div>
+            ) : (
+              <div>
+                {closedPositions.length > 0 ? (
+                  closedPositions.map((position) => (
+                    <div key={position.symbol + position.closedDate} className="mb-3">
+                      <PositionCard {...position} />
+                      <div className="text-xs text-muted mt-1 px-4">
+                        Closed on {position.closedDate} at ${position.closedPrice.toLocaleString()}
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-10 text-muted">
+                    No closed positions yet
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Watchlist */}
