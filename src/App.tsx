@@ -1,6 +1,67 @@
-import { Settings } from 'lucide-react'
+import { useState } from 'react'
+import { Settings, MessageCircle, Plus } from 'lucide-react'
+import { PositionCard } from './components/PositionCard'
+import { WatchlistItem } from './components/WatchlistItem'
+import { ChatPanel } from './components/ChatPanel'
+import { SettingsModal } from './components/SettingsModal'
 
 function App() {
+  const [showSettings, setShowSettings] = useState(false)
+  const [showChat, setShowChat] = useState(false)
+
+  // Mock data for now
+  const positions = [
+    {
+      symbol: 'SOL',
+      price: 175.43,
+      change: 5.2,
+      costBasis: 140.00,
+      quantity: 285.7,
+      totalValue: 50122,
+      gain: 10122,
+      gainPercent: 25.3,
+      stopLoss: -15,
+      takeProfit: 50
+    },
+    {
+      symbol: 'LINK',
+      price: 17.82,
+      change: -2.1,
+      costBasis: 16.50,
+      quantity: 3636,
+      totalValue: 64793,
+      gain: 4793,
+      gainPercent: 8.0,
+      stopLoss: -20,
+      takeProfit: 100
+    },
+    {
+      symbol: 'CCJ',
+      price: 52.15,
+      change: 3.8,
+      costBasis: 48.00,
+      quantity: 416,
+      totalValue: 21694,
+      gain: 1726,
+      gainPercent: 8.6,
+      stopLoss: -25,
+      takeProfit: 150
+    }
+  ]
+
+  const watchlist = [
+    { symbol: 'ONDO', trigger: 'Alert < $0.70 | AI Suggested', isAiSuggested: true },
+    { symbol: 'RKLB', trigger: 'Alert on breakout > $8.50', isAiSuggested: false },
+    { symbol: 'NXE', trigger: 'Alert < $6.00', isAiSuggested: false },
+    { symbol: 'MSTR', trigger: 'BTC leverage play | AI Suggested', isAiSuggested: true },
+    { symbol: 'SUI', trigger: 'Volume spike + RSI < 40', isAiSuggested: false }
+  ]
+
+  const upcomingIPOs = [
+    { symbol: 'Anduril', trigger: 'Defense Tech | Q4 2025?', isAiSuggested: true },
+    { symbol: 'Databricks', trigger: 'AI/Data | 2025', isAiSuggested: true }
+  ]
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="max-w-[1400px] mx-auto p-5">
@@ -28,7 +89,10 @@ function App() {
             </div>
           </div>
           
-          <button className="bg-card-hover border border-border-light text-white px-5 py-2.5 rounded-lg cursor-pointer transition-all hover:bg-[#262626] hover:border-border-lighter flex items-center gap-2">
+          <button 
+            onClick={() => setShowSettings(true)}
+            className="bg-card-hover border border-border-light text-white px-5 py-2.5 rounded-lg cursor-pointer transition-all hover:bg-[#262626] hover:border-border-lighter flex items-center gap-2"
+          >
             <Settings className="w-4 h-4" />
             Settings
           </button>
@@ -58,11 +122,65 @@ function App() {
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="text-center py-20">
-          <h2 className="text-xl text-muted">Portfolio dashboard coming soon...</h2>
+        {/* Main Grid */}
+        <div className="grid grid-cols-[1fr_300px] gap-8">
+          {/* Active Positions */}
+          <div className="bg-card border border-border rounded-xl p-5">
+            <div className="flex justify-between items-center mb-5">
+              <h2 className="text-xl font-bold">Active Positions</h2>
+              <button className="bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-md text-sm flex items-center gap-1">
+                <Plus className="w-4 h-4" />
+                Add Position
+              </button>
+            </div>
+            
+            {positions.map((position) => (
+              <PositionCard key={position.symbol} {...position} />
+            ))}
+          </div>
+
+          {/* Watchlist */}
+          <div className="bg-card border border-border rounded-xl p-5">
+            <div className="flex justify-between items-center mb-5">
+              <h3 className="text-lg font-bold">Watchlist</h3>
+              <button className="bg-primary hover:bg-primary-hover text-white px-3 py-1.5 rounded-md text-sm flex items-center gap-1">
+                <Plus className="w-3 h-3" />
+                Add
+              </button>
+            </div>
+            
+            {watchlist.map((item) => (
+              <WatchlistItem 
+                key={item.symbol} 
+                {...item}
+                onRemove={() => console.log('Remove', item.symbol)}
+              />
+            ))}
+
+            <h3 className="text-lg font-bold mt-8 mb-4">Upcoming IPOs</h3>
+            {upcomingIPOs.map((item) => (
+              <WatchlistItem 
+                key={item.symbol} 
+                {...item}
+                onRemove={() => console.log('Remove', item.symbol)}
+              />
+            ))}
+          </div>
         </div>
       </div>
+
+      {/* Chat Toggle Button */}
+      <button 
+        onClick={() => setShowChat(true)}
+        className="fixed bottom-5 right-5 bg-card-hover border border-border-light text-white px-5 py-2.5 rounded-lg cursor-pointer transition-all hover:bg-[#262626] hover:border-border-lighter flex items-center gap-2"
+      >
+        <MessageCircle className="w-4 h-4" />
+        Claude Assistant
+      </button>
+
+      {/* Modals */}
+      <ChatPanel isOpen={showChat} onClose={() => setShowChat(false)} />
+      <SettingsModal isOpen={showSettings} onClose={() => setShowSettings(false)} />
     </div>
   )
 }
