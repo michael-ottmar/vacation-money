@@ -10,8 +10,8 @@ function App() {
   const [showChat, setShowChat] = useState(false)
   
   // User configurable values (will come from settings/database later)
-  const [currentValue, setCurrentValue] = useState(400000)
-  const [goalValue, setGoalValue] = useState(1100000)
+  const currentValue = 400000 // TODO: Make this dynamic from settings
+  const goalValue = 1100000 // TODO: Make this dynamic from settings
   const taxRate = 0.25 // 25% estimated tax rate
   
   // Calculate progress percentages
