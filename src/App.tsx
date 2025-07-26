@@ -267,10 +267,10 @@ function App() {
               {activeTab === 'active' && (
                 <button 
                   onClick={() => setShowAddPosition(true)}
-                  className="bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-md text-sm flex items-center gap-1"
+                  className="bg-transparent border border-border-light hover:border-border-lighter text-muted hover:text-white px-3 py-1.5 rounded-md text-sm flex items-center gap-1 transition-colors"
                 >
-                  <Plus className="w-4 h-4" />
-                  Add Position
+                  <Plus className="w-3 h-3" />
+                  Add
                 </button>
               )}
             </div>
@@ -321,7 +321,7 @@ function App() {
           <div className="bg-card border border-border rounded-xl p-5">
             <div className="flex justify-between items-center mb-5">
               <h3 className="text-lg font-bold">Watchlist</h3>
-              <button className="bg-primary hover:bg-primary-hover text-white px-3 py-1.5 rounded-md text-sm flex items-center gap-1">
+              <button className="bg-transparent border border-border-light hover:border-border-lighter text-muted hover:text-white px-3 py-1.5 rounded-md text-sm flex items-center gap-1 transition-colors">
                 <Plus className="w-3 h-3" />
                 Add
               </button>
