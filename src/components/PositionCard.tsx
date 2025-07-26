@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Bot, ChevronDown, ChevronUp, TrendingUp, Activity, Bell, BellOff, DollarSign } from 'lucide-react'
+import { Bot, ChevronDown, ChevronUp, TrendingUp, Activity, Bell, BellOff, DollarSign, MessageCircle } from 'lucide-react'
 import { cn } from '../lib/utils'
 
 interface PositionCardProps {
@@ -14,6 +14,7 @@ interface PositionCardProps {
   stopLoss: number
   takeProfit: number
   onReportSale?: () => void
+  onOpenChat?: (context: { symbol: string; metrics: any }) => void
 }
 
 // Mock data for expanded view - will come from API/AI analysis later
@@ -21,6 +22,7 @@ const mockAnalystTargets = {
   low: 150,
   average: 185,
   high: 220,
+  aiRecommended: 195, // AI's recommended target
 }
 
 const mockMetrics = {
@@ -43,6 +45,7 @@ export function PositionCard({
   stopLoss,
   takeProfit,
   onReportSale,
+  onOpenChat,
 }: PositionCardProps) {
   const [isExpanded, setIsExpanded] = useState(false)
   const [notificationsEnabled, setNotificationsEnabled] = useState(true)
@@ -67,6 +70,7 @@ export function PositionCard({
   // Calculate positions on bar for visualization
   const currentPosition = ((price - mockAnalystTargets.low) / (mockAnalystTargets.high - mockAnalystTargets.low) * 100)
   const avgPosition = ((mockAnalystTargets.average - mockAnalystTargets.low) / (mockAnalystTargets.high - mockAnalystTargets.low) * 100)
+  const aiTargetPosition = ((mockAnalystTargets.aiRecommended - mockAnalystTargets.low) / (mockAnalystTargets.high - mockAnalystTargets.low) * 100)
 
   const presetOptions = [
     { label: '2%', value: 2 },
@@ -187,6 +191,15 @@ export function PositionCard({
                   className="absolute top-0 h-full w-0.5 bg-muted opacity-50"
                   style={{ left: `${avgPosition}%` }}
                 />
+                
+                {/* AI Recommended target indicator */}
+                <div 
+                  className="absolute top-1/2 -translate-y-1/2 w-6 h-6 bg-secondary rounded-full flex items-center justify-center"
+                  style={{ left: `calc(${aiTargetPosition}% - 12px)` }}
+                  title={`AI Target: $${mockAnalystTargets.aiRecommended}`}
+                >
+                  <Bot className="w-3 h-3 text-white" />
+                </div>
               </div>
               
               {/* Labels */}
@@ -220,10 +233,22 @@ export function PositionCard({
           <div className="bg-card/50 rounded-lg p-4">
             {/* Key Metrics */}
             <div className="mb-4">
-              <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
-                <Activity className="w-4 h-4 text-secondary" />
-                Key Metrics
-              </h4>
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="text-sm font-semibold flex items-center gap-2">
+                  <Activity className="w-4 h-4 text-secondary" />
+                  Key Metrics
+                </h4>
+                <button
+                  onClick={() => onOpenChat?.({ 
+                    symbol, 
+                    metrics: mockMetrics 
+                  })}
+                  className="px-3 py-1 bg-secondary/10 hover:bg-secondary/20 text-secondary border border-secondary rounded-md text-xs transition-all flex items-center gap-1"
+                >
+                  <MessageCircle className="w-3 h-3" />
+                  Chat
+                </button>
+              </div>
               <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
                 <div className="flex gap-2">
                   <span className="text-muted">RSI (14):</span>
@@ -255,15 +280,18 @@ export function PositionCard({
                 "Strong momentum with RSI showing oversold conditions. Breaking above key resistance at $170. 
                 Volume surge indicates institutional interest. Next resistance at $185."
               </p>
-              <p className="text-xs mt-2 text-muted/70">Last updated: 7:00 AM EST</p>
+              <div className="flex items-center gap-2 mt-2">
+                <p className="text-xs text-muted/70">Last updated: 7:00 AM EST</p>
+                <button
+                  onClick={() => console.log('Update AI analysis')}
+                  className="px-2 py-0.5 bg-secondary hover:bg-secondary-hover text-white rounded text-xs transition-all flex items-center gap-1"
+                >
+                  <Bot className="w-3 h-3" />
+                  Update
+                </button>
+              </div>
             </div>
           </div>
-          
-          {/* AI Analysis Button - moved to expanded view */}
-          <button className="w-full py-2.5 px-3 border border-secondary bg-secondary/10 text-[#a5b4fc] rounded-md cursor-pointer text-sm transition-all hover:bg-secondary/20 flex items-center justify-center gap-2">
-            <Bot className="w-4 h-4" />
-            View Full AI Analysis
-          </button>
         </div>
       )}
 

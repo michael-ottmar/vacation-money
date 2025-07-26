@@ -282,6 +282,11 @@ function App() {
                     key={position.symbol} 
                     {...position} 
                     onReportSale={() => setSelectedPositionForSale(position)}
+                    onOpenChat={(context) => {
+                      console.log('Opening chat with context:', context)
+                      setShowChat(true)
+                      // TODO: Pass context to ChatPanel
+                    }}
                   />
                 ))}
               </div>
@@ -290,7 +295,14 @@ function App() {
                 {closedPositions.length > 0 ? (
                   closedPositions.map((position) => (
                     <div key={position.symbol + position.closedDate} className="mb-3">
-                      <PositionCard {...position} />
+                      <PositionCard 
+                        {...position} 
+                        onOpenChat={(context) => {
+                          console.log('Opening chat with context:', context)
+                          setShowChat(true)
+                          // TODO: Pass context to ChatPanel
+                        }}
+                      />
                       <div className="text-xs text-muted mt-1 px-4">
                         Closed on {position.closedDate} at ${position.closedPrice.toLocaleString()}
                       </div>
