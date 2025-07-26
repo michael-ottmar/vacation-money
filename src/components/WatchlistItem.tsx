@@ -27,7 +27,7 @@ export function WatchlistItem({
 
   return (
     <div className={cn(
-      "bg-card-hover border rounded-lg p-3 mb-2.5 transition-all hover:border-border-lighter",
+      "group bg-card-hover border rounded-lg p-3 mb-2.5 transition-all hover:border-border-lighter",
       isAiSuggested 
         ? "border-secondary bg-secondary/5" 
         : "border-border-light"
@@ -50,7 +50,7 @@ export function WatchlistItem({
           </div>
         </div>
         
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
           {onTransfer && (
             <button 
               onClick={(e) => {

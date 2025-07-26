@@ -199,41 +199,47 @@ export function PositionCard({
             </div>
           </div>
 
-          {/* Technical Indicators */}
-          <div>
-            <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
-              <Activity className="w-4 h-4 text-secondary" />
-              Key Metrics
-            </h4>
-            <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
-              <div className="flex gap-2">
-                <span className="text-muted">RSI (14):</span>
-                <span className={mockMetrics.rsi < 30 ? "text-success" : mockMetrics.rsi > 70 ? "text-error" : ""}>
-                  {mockMetrics.rsi}
-                </span>
-              </div>
-              <div className="flex gap-2">
-                <span className="text-muted">Volume 24h:</span>
-                <span>{mockMetrics.volume24h}</span>
-              </div>
-              <div className="flex gap-2">
-                <span className="text-muted">Market Cap:</span>
-                <span>{mockMetrics.marketCap}</span>
-              </div>
-              <div className="flex gap-2">
-                <span className="text-muted">{symbol === 'CCJ' ? 'P/E Ratio:' : 'Dominance:'}</span>
-                <span>{symbol === 'CCJ' ? mockMetrics.peRatio : mockMetrics.dominance}</span>
+          {/* AI Analysis & Metrics */}
+          <div className="bg-card/50 rounded-lg p-4">
+            {/* Key Metrics */}
+            <div className="mb-4">
+              <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                <Activity className="w-4 h-4 text-secondary" />
+                Key Metrics
+              </h4>
+              <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
+                <div className="flex gap-2">
+                  <span className="text-muted">RSI (14):</span>
+                  <span className={mockMetrics.rsi < 30 ? "text-success" : mockMetrics.rsi > 70 ? "text-error" : "text-white"}>
+                    {mockMetrics.rsi}
+                  </span>
+                </div>
+                <div className="flex gap-2">
+                  <span className="text-muted">Volume 24h:</span>
+                  <span className="text-white">{mockMetrics.volume24h}</span>
+                </div>
+                <div className="flex gap-2">
+                  <span className="text-muted">Market Cap:</span>
+                  <span className="text-white">{mockMetrics.marketCap}</span>
+                </div>
+                <div className="flex gap-2">
+                  <span className="text-muted">{symbol === 'CCJ' ? 'P/E Ratio:' : 'Dominance:'}</span>
+                  <span className="text-white">{symbol === 'CCJ' ? mockMetrics.peRatio : mockMetrics.dominance}</span>
+                </div>
               </div>
             </div>
-          </div>
-
-          {/* AI Summary */}
-          <div className="bg-card/50 rounded-lg p-3 text-sm text-muted">
-            <p className="italic">
-              "Strong momentum with RSI showing oversold conditions. Breaking above key resistance at $170. 
-              Volume surge indicates institutional interest. Next resistance at $185."
-            </p>
-            <p className="text-xs mt-2 text-muted/70">Last updated: 7:00 AM EST</p>
+            
+            {/* Divider */}
+            <div className="border-t border-border mb-4" />
+            
+            {/* AI Summary */}
+            <div>
+              <p className="italic text-muted">
+                "Strong momentum with RSI showing oversold conditions. Breaking above key resistance at $170. 
+                Volume surge indicates institutional interest. Next resistance at $185."
+              </p>
+              <p className="text-xs mt-2 text-muted/70">Last updated: 7:00 AM EST</p>
+            </div>
           </div>
         </div>
       )}

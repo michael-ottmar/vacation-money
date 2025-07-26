@@ -12,7 +12,6 @@ function App() {
   const [activeTab, setActiveTab] = useState<'active' | 'history'>('active')
   
   // User configurable values (will come from settings/database later)
-  const startingValue = 400000 // Initial portfolio value
   const currentValue = 400000 // TODO: Make this dynamic from settings
   const goalValue = 1100000 // TODO: Make this dynamic from settings
   const taxRate = 0.25 // 25% estimated tax rate
@@ -135,16 +134,17 @@ function App() {
               />
               {/* Actual progress */}
               <div 
-                className="absolute top-0 left-0 bg-gradient-to-r from-primary to-green-500 h-full flex items-center justify-center font-bold text-sm"
+                className="absolute top-0 left-0 bg-gradient-to-r from-primary to-green-500 h-full"
                 style={{ width: `${progressPercent}%` }}
-              >
-                ${(totalValue / 1000).toFixed(0)}K / ${(goalValue / 1000).toFixed(0)}K
+              />
+              {/* Current value on left */}
+              <div className="absolute left-3 h-full flex items-center font-bold text-sm">
+                ${(totalValue / 1000).toFixed(0)}K
               </div>
-            </div>
-            <div className="flex justify-between mt-2 text-xs text-muted">
-              <span>Start: ${startingValue.toLocaleString()}</span>
-              <span>{progressPercent}% to goal</span>
-              <span>Target: ${goalValue.toLocaleString()}</span>
+              {/* Goal value on right */}
+              <div className="absolute right-3 h-full flex items-center font-bold text-sm">
+                ${(goalValue / 1000).toFixed(0)}K
+              </div>
             </div>
           </div>
           
@@ -192,9 +192,9 @@ function App() {
         </div>
 
         {/* Main Grid */}
-        <div className="grid grid-cols-[1fr_300px] gap-8">
+        <div className="grid grid-cols-4 gap-5">
           {/* Positions Section */}
-          <div className="bg-card border border-border rounded-xl p-5">
+          <div className="col-span-3 bg-card border border-border rounded-xl p-5">
             <div className="flex justify-between items-center mb-5">
               <div className="flex gap-4">
                 <button
