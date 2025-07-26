@@ -112,25 +112,6 @@ export function PositionCard({
           <div className="flex items-center gap-2">
             <span className="text-xl font-bold">{symbol}</span>
             <span className="text-lg">${price.toFixed(2)}</span>
-            {isExpanded ? 
-              <ChevronUp className="w-4 h-4 text-muted" /> : 
-              <ChevronDown className="w-4 h-4 text-muted" />
-            }
-          </div>
-          <div className="flex items-center gap-2">
-            <button 
-              onClick={(e) => {
-                e.stopPropagation()
-                setNotificationsEnabled(!notificationsEnabled)
-              }}
-              className="p-1 hover:bg-card rounded transition-colors"
-              title={notificationsEnabled ? "Notifications enabled" : "Notifications disabled"}
-            >
-              {notificationsEnabled ? 
-                <Bell className="w-4 h-4 text-primary" /> : 
-                <BellOff className="w-4 h-4 text-muted" />
-              }
-            </button>
             <span className={cn(
               "text-sm px-2 py-1 rounded",
               isPositive 
@@ -139,7 +120,24 @@ export function PositionCard({
             )}>
               {isPositive ? '+' : ''}{change.toFixed(1)}%
             </span>
+            {isExpanded ? 
+              <ChevronUp className="w-4 h-4 text-muted" /> : 
+              <ChevronDown className="w-4 h-4 text-muted" />
+            }
           </div>
+          <button 
+            onClick={(e) => {
+              e.stopPropagation()
+              setNotificationsEnabled(!notificationsEnabled)
+            }}
+            className="p-1 hover:bg-card rounded transition-colors"
+            title={notificationsEnabled ? "Notifications enabled" : "Notifications disabled"}
+          >
+            {notificationsEnabled ? 
+              <Bell className="w-4 h-4 text-primary" /> : 
+              <BellOff className="w-4 h-4 text-muted" />
+            }
+          </button>
         </div>
 
         {/* Details Grid */}
