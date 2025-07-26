@@ -122,20 +122,20 @@ export function PositionCard({
         </div>
 
         {/* Details Grid */}
-        <div className="grid grid-cols-2 gap-3 mb-3 text-sm">
-          <div className="flex justify-between">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-2 mb-3 text-sm">
+          <div className="flex gap-2">
             <span className="text-muted">Cost Basis:</span>
             <span className="text-white">${costBasis.toFixed(2)}</span>
           </div>
-          <div className="flex justify-between">
+          <div className="flex gap-2">
             <span className="text-muted">Quantity:</span>
             <span className="text-white">{quantity.toLocaleString()}</span>
           </div>
-          <div className="flex justify-between">
+          <div className="flex gap-2">
             <span className="text-muted">Total Value:</span>
             <span className="text-white">${totalValue.toLocaleString()}</span>
           </div>
-          <div className="flex justify-between">
+          <div className="flex gap-2">
             <span className="text-muted">Gain:</span>
             <span className={isGainPositive ? "text-success" : "text-error"}>
               {isGainPositive ? '+' : ''}${gain.toLocaleString()} ({isGainPositive ? '+' : ''}{gainPercent.toFixed(1)}%)
@@ -205,23 +205,23 @@ export function PositionCard({
               <Activity className="w-4 h-4 text-secondary" />
               Key Metrics
             </h4>
-            <div className="grid grid-cols-2 gap-3 text-sm">
-              <div className="flex justify-between">
-                <span className="text-muted">RSI (14)</span>
+            <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
+              <div className="flex gap-2">
+                <span className="text-muted">RSI (14):</span>
                 <span className={mockMetrics.rsi < 30 ? "text-success" : mockMetrics.rsi > 70 ? "text-error" : ""}>
                   {mockMetrics.rsi}
                 </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted">Volume 24h</span>
+              <div className="flex gap-2">
+                <span className="text-muted">Volume 24h:</span>
                 <span>{mockMetrics.volume24h}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted">Market Cap</span>
+              <div className="flex gap-2">
+                <span className="text-muted">Market Cap:</span>
                 <span>{mockMetrics.marketCap}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted">{symbol === 'CCJ' ? 'P/E Ratio' : 'Dominance'}</span>
+              <div className="flex gap-2">
+                <span className="text-muted">{symbol === 'CCJ' ? 'P/E Ratio:' : 'Dominance:'}</span>
                 <span>{symbol === 'CCJ' ? mockMetrics.peRatio : mockMetrics.dominance}</span>
               </div>
             </div>
