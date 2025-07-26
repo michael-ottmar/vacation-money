@@ -9,12 +9,12 @@ interface ChatPanelProps {
 export function ChatPanel({ isOpen, onClose }: ChatPanelProps) {
   return (
     <div className={cn(
-      "fixed right-0 top-0 w-[400px] h-screen bg-background border-l border-border-light transition-transform duration-300 z-50 flex flex-col",
+      "fixed right-0 top-0 w-[calc(25%+40px)] min-w-[400px] max-w-[500px] h-screen bg-background border-l border-border-light transition-transform duration-300 z-50 flex flex-col",
       isOpen ? "translate-x-0" : "translate-x-full"
     )}>
-      {/* Header */}
-      <div className="p-5 border-b border-border-light flex justify-between items-center">
-        <h3 className="text-lg font-semibold">Claude Assistant</h3>
+      {/* Header - aligned to match main header height */}
+      <div className="h-[88px] border-b border-border-light flex items-center px-5">
+        <h3 className="text-xl font-bold flex-1">Claude Assistant</h3>
         <button 
           onClick={onClose}
           className="bg-transparent border-none text-[#666] cursor-pointer p-1 hover:text-error transition-colors"

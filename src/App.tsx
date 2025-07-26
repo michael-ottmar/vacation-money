@@ -151,18 +151,18 @@ function App() {
           {/* Action Buttons */}
           <div className="flex gap-3">
             <button 
-              onClick={() => setShowChat(true)}
-              className="bg-card-hover border border-border-light text-white px-4 py-2 rounded-lg cursor-pointer transition-all hover:bg-[#262626] hover:border-border-lighter flex items-center gap-2"
-            >
-              <MessageCircle className="w-4 h-4" />
-              Claude Assistant
-            </button>
-            <button 
               onClick={() => setShowSettings(true)}
               className="bg-card-hover border border-border-light text-white px-4 py-2 rounded-lg cursor-pointer transition-all hover:bg-[#262626] hover:border-border-lighter flex items-center gap-2"
             >
               <Settings className="w-4 h-4" />
               Settings
+            </button>
+            <button 
+              onClick={() => setShowChat(true)}
+              className="bg-secondary/10 border border-secondary text-[#a5b4fc] px-4 py-2 rounded-lg cursor-pointer transition-all hover:bg-secondary/20 flex items-center gap-2"
+            >
+              <MessageCircle className="w-4 h-4" />
+              Claude Assistant
             </button>
           </div>
         </header>
