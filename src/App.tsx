@@ -67,17 +67,23 @@ function App() {
     }
   ]
 
-  const watchlist = [
-    { symbol: 'ONDO', trigger: 'Alert < $0.70 | AI Suggested', isAiSuggested: true },
-    { symbol: 'RKLB', trigger: 'Alert on breakout > $8.50', isAiSuggested: false },
-    { symbol: 'NXE', trigger: 'Alert < $6.00', isAiSuggested: false },
-    { symbol: 'MSTR', trigger: 'BTC leverage play | AI Suggested', isAiSuggested: true },
-    { symbol: 'SUI', trigger: 'Volume spike + RSI < 40', isAiSuggested: false }
+  // Always show 3 AI recommendations at the top
+  const aiRecommendations = [
+    { symbol: 'ONDO', trigger: 'Breaking out of consolidation pattern. RWA narrative gaining traction with institutional adoption. Entry below $0.70 offers favorable risk/reward with targets at $1.20.' },
+    { symbol: 'MSTR', trigger: 'Bitcoin leverage play trading at discount to NAV. Strong accumulation pattern forming. Consider entry on any pullback to $340 support level.' },
+    { symbol: 'NXE', trigger: 'Nuclear sector momentum building on AI data center demand. Chart showing cup & handle formation. Accumulate under $6 for potential breakout to $8+.' }
+  ]
+  
+  // User's personal watchlist
+  const userWatchlist = [
+    { symbol: 'RKLB', trigger: 'Space sector leader. Wait for breakout above $8.50 resistance with volume confirmation.' },
+    { symbol: 'SUI', trigger: 'L1 competitor showing strength. Volume spike + RSI < 40 would signal oversold bounce opportunity.' },
+    { symbol: 'PLTR', trigger: 'AI defense play. Watching for pullback to 50-day MA around $42 for entry.' }
   ]
 
   const upcomingIPOs = [
-    { symbol: 'Anduril', trigger: 'Defense Tech | Q4 2025?', isAiSuggested: true },
-    { symbol: 'Databricks', trigger: 'AI/Data | 2025', isAiSuggested: true }
+    { symbol: 'Anduril', trigger: 'Defense tech unicorn valued at $8.5B. Palmer Luckey\'s military drone company expected Q4 2025. Watch for S-1 filing.' },
+    { symbol: 'Databricks', trigger: 'AI/ML platform leader. Last valued at $43B. Strong revenue growth could support $60B+ IPO valuation in 2025.' }
   ]
   
   // Mock closed positions for history tab
@@ -258,11 +264,29 @@ function App() {
               </button>
             </div>
             
-            {watchlist.map((item) => (
+            {/* AI Recommendations */}
+            <div className="mb-4">
+              <h4 className="text-xs font-semibold text-muted mb-2">AI Recommendations</h4>
+              {aiRecommendations.map((item) => (
+                <WatchlistItem 
+                  key={item.symbol} 
+                  {...item}
+                  isAiSuggested={true}
+                  onTransfer={() => console.log('Transfer to positions:', item.symbol)}
+                />
+              ))}
+            </div>
+            
+            {/* Divider */}
+            <div className="border-t border-border mb-4" />
+            
+            {/* User Watchlist */}
+            {userWatchlist.map((item) => (
               <WatchlistItem 
                 key={item.symbol} 
                 {...item}
                 onRemove={() => console.log('Remove', item.symbol)}
+                onTransfer={() => console.log('Transfer to positions:', item.symbol)}
               />
             ))}
 
@@ -272,6 +296,7 @@ function App() {
                 key={item.symbol} 
                 {...item}
                 onRemove={() => console.log('Remove', item.symbol)}
+                onTransfer={() => console.log('Transfer to positions:', item.symbol)}
               />
             ))}
           </div>
