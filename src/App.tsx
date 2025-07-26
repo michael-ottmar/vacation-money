@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Settings, MessageCircle, Plus } from 'lucide-react'
+import { Settings, MessageCircle, Plus, User } from 'lucide-react'
 import { PositionCard } from './components/PositionCard'
 import { WatchlistItem } from './components/WatchlistItem'
 import { ChatPanel } from './components/ChatPanel'
@@ -14,6 +14,14 @@ function App() {
   const [showAddPosition, setShowAddPosition] = useState(false)
   const [selectedPositionForSale, setSelectedPositionForSale] = useState<typeof positions[0] | null>(null)
   const [activeTab, setActiveTab] = useState<'active' | 'history'>('active')
+  const [showUserMenu, setShowUserMenu] = useState(false)
+  
+  // Mock user data - will come from auth later
+  const user = {
+    email: 'user@example.com',
+    name: 'John Doe',
+    initials: 'JD'
+  }
   
   // User configurable values (will come from settings/database later)
   const currentValue = 400000 // TODO: Make this dynamic from settings
@@ -123,9 +131,9 @@ function App() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="max-w-[1400px] mx-auto p-5">
-        {/* Header */}
-        <header className="flex items-center justify-between mb-8 pb-5 border-b border-border-light">
+      {/* Fixed Header */}
+      <header className="fixed top-0 left-0 right-0 bg-background z-40 border-b border-border-light">
+        <div className="max-w-[1400px] mx-auto p-5 flex items-center justify-between">
           <h1 className="text-2xl font-bold">Portfolio Tracker</h1>
           
           {/* Progress Bar */}
@@ -153,7 +161,7 @@ function App() {
           </div>
           
           {/* Action Buttons */}
-          <div className="flex gap-3">
+          <div className="flex items-center gap-3">
             <button 
               onClick={() => setShowSettings(true)}
               className="bg-card-hover border border-border-light text-white px-4 py-2 rounded-lg cursor-pointer transition-all hover:bg-[#262626] hover:border-border-lighter flex items-center gap-2"
@@ -168,9 +176,41 @@ function App() {
               <MessageCircle className="w-4 h-4" />
               Claude Assistant
             </button>
+            
+            {/* User Account Circle */}
+            <div className="relative">
+              <button
+                onClick={() => setShowUserMenu(!showUserMenu)}
+                className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-semibold hover:bg-primary-hover transition-colors"
+              >
+                {user.initials || <User className="w-5 h-5" />}
+              </button>
+              
+              {showUserMenu && (
+                <div className="absolute right-0 top-full mt-2 bg-card border border-border-light rounded-lg py-2 w-48 z-10">
+                  <div className="px-4 py-2 border-b border-border-light">
+                    <div className="font-semibold text-sm">{user.name}</div>
+                    <div className="text-xs text-muted">{user.email}</div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      console.log('Logout')
+                      setShowUserMenu(false)
+                      // TODO: Implement logout
+                    }}
+                    className="w-full text-left px-4 py-2 text-sm hover:bg-card-hover transition-colors text-error"
+                  >
+                    Log Out
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
-        </header>
-
+        </div>
+      </header>
+      
+      {/* Main Content - add padding to account for fixed header */}
+      <div className="max-w-[1400px] mx-auto p-5 pt-[104px]">
         {/* Stats Grid */}
         <div className="grid grid-cols-4 gap-5 mb-8">
           <div className="bg-card border border-border rounded-lg p-4 text-center">

@@ -53,6 +53,11 @@ export function PositionCard({
   
   const isPositive = change >= 0
   const isGainPositive = gain >= 0
+  
+  // Calculate if position is near take profit or stop loss
+  const currentGainPercent = gainPercent
+  const isNearTakeProfit = currentGainPercent >= takeProfit * 0.8 // 80% of take profit target
+  const isNearStopLoss = currentGainPercent <= stopLoss * 0.8 && currentGainPercent < 0 // 80% of stop loss
 
   // Calculate price targets relative to current price
   const targetLowPercent = ((mockAnalystTargets.low - price) / price * 100).toFixed(1)
@@ -83,9 +88,19 @@ export function PositionCard({
   }
 
   return (
-    <div className="bg-card-hover border border-border-light rounded-lg p-4 mb-3 transition-all hover:border-border-lighter relative">
+    <div className={cn(
+      "border border-border-light rounded-lg p-4 mb-3 transition-all hover:border-border-lighter relative overflow-hidden",
+      "bg-card-hover"
+    )}>
+      {/* Gradient overlays for profit/loss indicators */}
+      {isNearTakeProfit && (
+        <div className="absolute inset-0 bg-gradient-to-tl from-success/10 via-transparent to-transparent pointer-events-none" />
+      )}
+      {isNearStopLoss && (
+        <div className="absolute inset-0 bg-gradient-to-tr from-error/10 via-transparent to-transparent pointer-events-none" />
+      )}
       <div 
-        className="cursor-pointer"
+        className="cursor-pointer relative z-10"
         onClick={() => setIsExpanded(!isExpanded)}
       >
         {/* Header */}
@@ -343,7 +358,7 @@ export function PositionCard({
 
         <button 
           onClick={onReportSale}
-          className="flex-1 py-2 px-3 border border-error/50 bg-error/10 text-[#ff6b6b] rounded-md cursor-pointer text-[13px] transition-all hover:bg-error/20 hover:border-error flex items-center justify-center gap-1"
+          className="flex-1 py-2 px-3 border border-border-light bg-transparent text-muted rounded-md cursor-pointer text-[13px] transition-all hover:border-border-lighter hover:text-white flex items-center justify-center gap-1"
         >
           <DollarSign className="w-4 h-4" />
           Report Sale
