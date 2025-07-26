@@ -233,22 +233,10 @@ export function PositionCard({
           <div className="bg-card/50 rounded-lg p-4">
             {/* Key Metrics */}
             <div className="mb-4">
-              <div className="flex items-center justify-between mb-3">
-                <h4 className="text-sm font-semibold flex items-center gap-2">
-                  <Activity className="w-4 h-4 text-secondary" />
-                  Key Metrics
-                </h4>
-                <button
-                  onClick={() => onOpenChat?.({ 
-                    symbol, 
-                    metrics: mockMetrics 
-                  })}
-                  className="px-3 py-1 bg-secondary/10 hover:bg-secondary/20 text-secondary border border-secondary rounded-md text-xs transition-all flex items-center gap-1"
-                >
-                  <MessageCircle className="w-3 h-3" />
-                  Chat
-                </button>
-              </div>
+              <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                <Activity className="w-4 h-4 text-secondary" />
+                Key Metrics
+              </h4>
               <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
                 <div className="flex gap-2">
                   <span className="text-muted">RSI (14):</span>
@@ -280,15 +268,27 @@ export function PositionCard({
                 "Strong momentum with RSI showing oversold conditions. Breaking above key resistance at $170. 
                 Volume surge indicates institutional interest. Next resistance at $185."
               </p>
-              <div className="flex items-center gap-2 mt-2">
+              <div className="flex items-center justify-between mt-2">
                 <p className="text-xs text-muted/70">Last updated: 7:00 AM EST</p>
-                <button
-                  onClick={() => console.log('Update AI analysis')}
-                  className="px-2 py-0.5 bg-secondary hover:bg-secondary-hover text-white rounded text-xs transition-all flex items-center gap-1"
-                >
-                  <Bot className="w-3 h-3" />
-                  Update
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => console.log('Update AI analysis')}
+                    className="px-2 py-0.5 bg-secondary hover:bg-secondary-hover text-white rounded text-xs transition-all flex items-center gap-1"
+                  >
+                    <Bot className="w-3 h-3" />
+                    Update
+                  </button>
+                  <button
+                    onClick={() => onOpenChat?.({ 
+                      symbol, 
+                      metrics: mockMetrics 
+                    })}
+                    className="px-2 py-0.5 bg-secondary hover:bg-secondary-hover text-white rounded text-xs transition-all flex items-center gap-1"
+                  >
+                    <MessageCircle className="w-3 h-3" />
+                    Chat
+                  </button>
+                </div>
               </div>
             </div>
           </div>
