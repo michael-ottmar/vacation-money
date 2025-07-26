@@ -4,11 +4,15 @@ import { PositionCard } from './components/PositionCard'
 import { WatchlistItem } from './components/WatchlistItem'
 import { ChatPanel } from './components/ChatPanel'
 import { SettingsModal } from './components/SettingsModal'
+import { AddPositionModal } from './components/AddPositionModal'
+import { ReportSaleModal } from './components/ReportSaleModal'
 import { cn } from './lib/utils'
 
 function App() {
   const [showSettings, setShowSettings] = useState(false)
   const [showChat, setShowChat] = useState(false)
+  const [showAddPosition, setShowAddPosition] = useState(false)
+  const [selectedPositionForSale, setSelectedPositionForSale] = useState<typeof positions[0] | null>(null)
   const [activeTab, setActiveTab] = useState<'active' | 'history'>('active')
   
   // User configurable values (will come from settings/database later)
@@ -221,7 +225,10 @@ function App() {
                 </button>
               </div>
               {activeTab === 'active' && (
-                <button className="bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-md text-sm flex items-center gap-1">
+                <button 
+                  onClick={() => setShowAddPosition(true)}
+                  className="bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-md text-sm flex items-center gap-1"
+                >
                   <Plus className="w-4 h-4" />
                   Add Position
                 </button>
@@ -231,7 +238,11 @@ function App() {
             {activeTab === 'active' ? (
               <div>
                 {positions.map((position) => (
-                  <PositionCard key={position.symbol} {...position} />
+                  <PositionCard 
+                    key={position.symbol} 
+                    {...position} 
+                    onReportSale={() => setSelectedPositionForSale(position)}
+                  />
                 ))}
               </div>
             ) : (
@@ -307,6 +318,30 @@ function App() {
       {/* Modals */}
       <ChatPanel isOpen={showChat} onClose={() => setShowChat(false)} />
       <SettingsModal isOpen={showSettings} onClose={() => setShowSettings(false)} />
+      <AddPositionModal 
+        isOpen={showAddPosition} 
+        onClose={() => setShowAddPosition(false)}
+        onSubmit={(position) => {
+          console.log('New position:', position)
+          // TODO: Add position to state/database
+        }}
+      />
+      {selectedPositionForSale && (
+        <ReportSaleModal
+          isOpen={!!selectedPositionForSale}
+          onClose={() => setSelectedPositionForSale(null)}
+          position={{
+            symbol: selectedPositionForSale.symbol,
+            quantity: selectedPositionForSale.quantity,
+            costBasis: selectedPositionForSale.costBasis,
+            currentPrice: selectedPositionForSale.price
+          }}
+          onSubmit={(sale) => {
+            console.log('Sale reported:', sale)
+            // TODO: Process sale and update position/move to history
+          }}
+        />
+      )}
     </div>
   )
 }

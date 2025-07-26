@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Bot, ChevronDown, ChevronUp, TrendingUp, Activity, Bell, BellOff } from 'lucide-react'
+import { Bot, ChevronDown, ChevronUp, TrendingUp, Activity, Bell, BellOff, DollarSign } from 'lucide-react'
 import { cn } from '../lib/utils'
 
 interface PositionCardProps {
@@ -13,6 +13,7 @@ interface PositionCardProps {
   gainPercent: number
   stopLoss: number
   takeProfit: number
+  onReportSale?: () => void
 }
 
 // Mock data for expanded view - will come from API/AI analysis later
@@ -41,6 +42,7 @@ export function PositionCard({
   gainPercent,
   stopLoss,
   takeProfit,
+  onReportSale,
 }: PositionCardProps) {
   const [isExpanded, setIsExpanded] = useState(false)
   const [notificationsEnabled, setNotificationsEnabled] = useState(true)
@@ -241,6 +243,12 @@ export function PositionCard({
               <p className="text-xs mt-2 text-muted/70">Last updated: 7:00 AM EST</p>
             </div>
           </div>
+          
+          {/* AI Analysis Button - moved to expanded view */}
+          <button className="w-full py-2.5 px-3 border border-secondary bg-secondary/10 text-[#a5b4fc] rounded-md cursor-pointer text-sm transition-all hover:bg-secondary/20 flex items-center justify-center gap-2">
+            <Bot className="w-4 h-4" />
+            View Full AI Analysis
+          </button>
         </div>
       )}
 
@@ -333,9 +341,12 @@ export function PositionCard({
           )}
         </div>
 
-        <button className="flex-1 py-2 px-3 border border-secondary bg-secondary/10 text-[#a5b4fc] rounded-md cursor-pointer text-[13px] transition-all hover:bg-secondary/20 flex items-center justify-center gap-1">
-          <Bot className="w-4 h-4" />
-          AI Analysis
+        <button 
+          onClick={onReportSale}
+          className="flex-1 py-2 px-3 border border-error/50 bg-error/10 text-[#ff6b6b] rounded-md cursor-pointer text-[13px] transition-all hover:bg-error/20 hover:border-error flex items-center justify-center gap-1"
+        >
+          <DollarSign className="w-4 h-4" />
+          Report Sale
         </button>
       </div>
     </div>
