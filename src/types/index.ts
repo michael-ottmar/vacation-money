@@ -30,6 +30,7 @@ export interface WatchlistItem {
   symbol: string
   trigger: string
   isAiSuggested?: boolean
+  isIPO?: boolean
 }
 
 // Market Data Types

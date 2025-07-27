@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { X } from 'lucide-react'
 
 interface AddPositionModalProps {
   isOpen: boolean
   onClose: () => void
+  prefilledSymbol?: string
   onSubmit?: (position: {
     symbol: string
     quantity: number
@@ -14,13 +15,20 @@ interface AddPositionModalProps {
   }) => void
 }
 
-export function AddPositionModal({ isOpen, onClose, onSubmit }: AddPositionModalProps) {
-  const [symbol, setSymbol] = useState('')
+export function AddPositionModal({ isOpen, onClose, prefilledSymbol, onSubmit }: AddPositionModalProps) {
+  const [symbol, setSymbol] = useState(prefilledSymbol || '')
   const [quantity, setQuantity] = useState('')
   const [costBasis, setCostBasis] = useState('')
   const [stopLoss, setStopLoss] = useState('')
   const [takeProfit, setTakeProfit] = useState('')
   const [notes, setNotes] = useState('')
+  
+  // Update symbol when prefilledSymbol changes
+  useEffect(() => {
+    if (prefilledSymbol) {
+      setSymbol(prefilledSymbol)
+    }
+  }, [prefilledSymbol])
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()

@@ -5,6 +5,7 @@ import { WatchlistItem } from './components/WatchlistItem'
 import { ChatPanel } from './components/ChatPanel'
 import { SettingsModal } from './components/SettingsModal'
 import { AddPositionModal } from './components/AddPositionModal'
+import { AddToWatchlistModal } from './components/AddToWatchlistModal'
 import { ReportSaleModal } from './components/ReportSaleModal'
 import { cn } from './lib/utils'
 import { useApp } from './context/AppContext'
@@ -20,6 +21,7 @@ function App() {
     upcomingIPOs,
     portfolioStats,
     reportSale,
+    addToWatchlist,
     removeFromWatchlist,
     addPosition
   } = useApp()
@@ -27,9 +29,11 @@ function App() {
   const [showSettings, setShowSettings] = useState(false)
   const [showChat, setShowChat] = useState(false)
   const [showAddPosition, setShowAddPosition] = useState(false)
+  const [showAddToWatchlist, setShowAddToWatchlist] = useState(false)
   const [selectedPositionForSale, setSelectedPositionForSale] = useState<Position | null>(null)
   const [activeTab, setActiveTab] = useState<'active' | 'history'>('active')
   const [showUserMenu, setShowUserMenu] = useState(false)
+  const [prefilledSymbol, setPrefilledSymbol] = useState<string>('')
   
   // Calculate total value including realized gains
   const totalValue = portfolioStats.currentValue + portfolioStats.realizedGains
@@ -253,7 +257,10 @@ function App() {
           <div className="bg-card border border-border rounded-xl p-5">
             <div className="flex justify-between items-center mb-5">
               <h3 className="text-lg font-bold">Watchlist</h3>
-              <button className="bg-transparent border border-border-light hover:border-border-lighter text-muted hover:text-white px-3 py-1.5 rounded-md text-sm flex items-center gap-1 transition-colors">
+              <button 
+                onClick={() => setShowAddToWatchlist(true)}
+                className="bg-transparent border border-border-light hover:border-border-lighter text-muted hover:text-white px-3 py-1.5 rounded-md text-sm flex items-center gap-1 transition-colors"
+              >
                 <Plus className="w-3 h-3" />
                 Add
               </button>
@@ -267,7 +274,10 @@ function App() {
                   key={item.symbol} 
                   {...item}
                   isAiSuggested={true}
-                  onTransfer={() => console.log('Transfer to positions:', item.symbol)}
+                  onTransfer={() => {
+                    setPrefilledSymbol(item.symbol)
+                    setShowAddPosition(true)
+                  }}
                 />
               ))}
             </div>
@@ -302,9 +312,21 @@ function App() {
       {/* Modals */}
       <ChatPanel isOpen={showChat} onClose={() => setShowChat(false)} />
       <SettingsModal isOpen={showSettings} onClose={() => setShowSettings(false)} />
+      <AddToWatchlistModal 
+        isOpen={showAddToWatchlist}
+        onClose={() => setShowAddToWatchlist(false)}
+        onSubmit={(item) => {
+          addToWatchlist(item)
+          setShowAddToWatchlist(false)
+        }}
+      />
       <AddPositionModal 
         isOpen={showAddPosition} 
-        onClose={() => setShowAddPosition(false)}
+        onClose={() => {
+          setShowAddPosition(false)
+          setPrefilledSymbol('')
+        }}
+        prefilledSymbol={prefilledSymbol}
         onSubmit={(newPos) => {
           const position: Position = {
             symbol: newPos.symbol,

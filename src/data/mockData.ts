@@ -119,11 +119,13 @@ export const mockUserWatchlist: WatchlistItem[] = [
 export const mockUpcomingIPOs: WatchlistItem[] = [
   { 
     symbol: 'Anduril', 
-    trigger: 'Defense tech unicorn valued at $8.5B. Palmer Luckey\'s military drone company expected Q4 2025. Watch for S-1 filing.' 
+    trigger: 'Defense tech unicorn valued at $8.5B. Palmer Luckey\'s military drone company expected Q4 2025. Watch for S-1 filing.',
+    isIPO: true
   },
   { 
     symbol: 'Databricks', 
-    trigger: 'AI/ML platform leader. Last valued at $43B. Strong revenue growth could support $60B+ IPO valuation in 2025.' 
+    trigger: 'AI/ML platform leader. Last valued at $43B. Strong revenue growth could support $60B+ IPO valuation in 2025.',
+    isIPO: true
   }
 ]
 

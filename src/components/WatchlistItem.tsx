@@ -6,6 +6,7 @@ interface WatchlistItemProps {
   symbol: string
   trigger: string
   isAiSuggested?: boolean
+  isIPO?: boolean
   onRemove?: () => void
   onTransfer?: () => void
 }
@@ -14,6 +15,7 @@ export function WatchlistItem({
   symbol, 
   trigger, 
   isAiSuggested = false,
+  isIPO = false,
   onRemove,
   onTransfer
 }: WatchlistItemProps) {
@@ -43,14 +45,16 @@ export function WatchlistItem({
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
             <span className="font-bold">{symbol}</span>
-            <span className={cn(
-              "text-xs px-1.5 py-0.5 rounded",
-              isPositive 
-                ? "text-success bg-success/10" 
-                : "text-error bg-error/10"
-            )}>
-              {isPositive ? '+' : ''}{Math.abs(changePercent).toFixed(1)}%
-            </span>
+            {!isIPO && (
+              <span className={cn(
+                "text-xs px-1.5 py-0.5 rounded",
+                isPositive 
+                  ? "text-success bg-success/10" 
+                  : "text-error bg-error/10"
+              )}>
+                {isPositive ? '+' : ''}{Math.abs(changePercent).toFixed(1)}%
+              </span>
+            )}
             {needsTruncation && (
               isExpanded ? 
                 <ChevronUp className="w-3 h-3 text-muted" /> : 
