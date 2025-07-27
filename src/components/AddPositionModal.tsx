@@ -159,7 +159,7 @@ export function AddPositionModal({ isOpen, onClose, onSubmit }: AddPositionModal
               onChange={(e) => setNotes(e.target.value)}
               className="w-full bg-card-hover border border-border-light text-white p-3 rounded-lg text-sm placeholder:text-muted focus:outline-none focus:border-primary resize-none"
               placeholder="Entry reasoning, strategy, etc."
-              rows={3}
+              rows={6}
             />
           </div>
         </form>

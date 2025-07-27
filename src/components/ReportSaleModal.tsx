@@ -58,16 +58,25 @@ export function ReportSaleModal({ isOpen, onClose, position, onSubmit }: ReportS
         {/* Header */}
         <div className="flex justify-between items-center p-5 border-b border-border-light">
           <h2 className="text-xl font-bold">Report Sale - {position.symbol}</h2>
-          <button 
-            onClick={onClose}
-            className="bg-transparent border-none text-[#666] cursor-pointer p-1 hover:text-error transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              type="submit"
+              form="report-sale-form"
+              className="bg-success hover:bg-success/80 text-white px-4 py-1.5 rounded-md text-sm transition-colors"
+            >
+              Confirm Sale
+            </button>
+            <button 
+              onClick={onClose}
+              className="bg-transparent border-none text-[#666] cursor-pointer p-1 hover:text-error transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
         
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-5 space-y-4">
+        <form id="report-sale-form" onSubmit={handleSubmit} className="p-5 space-y-4">
           {/* Position Info */}
           <div className="bg-card-hover rounded-lg p-3 text-sm">
             <div className="flex justify-between mb-1">
@@ -163,25 +172,8 @@ export function ReportSaleModal({ isOpen, onClose, position, onSubmit }: ReportS
               onChange={(e) => setNotes(e.target.value)}
               className="w-full bg-card-hover border border-border-light text-white p-3 rounded-lg text-sm placeholder:text-muted focus:outline-none focus:border-primary resize-none"
               placeholder="Exit reasoning, market conditions, etc."
-              rows={3}
+              rows={6}
             />
-          </div>
-          
-          {/* Actions */}
-          <div className="flex gap-3 pt-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 py-2.5 px-4 border border-border-light bg-transparent text-white rounded-lg cursor-pointer text-sm transition-all hover:bg-card-hover"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="flex-1 py-2.5 px-4 bg-error hover:bg-error/80 text-white rounded-lg cursor-pointer text-sm transition-all"
-            >
-              Confirm Sale
-            </button>
           </div>
         </form>
       </div>
