@@ -9,8 +9,8 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   if (!isOpen) return null
 
   return (
-    <div className="fixed top-0 left-0 right-0 bottom-0 bg-black/80 flex items-center justify-center z-[100]">
-      <div className="bg-card border border-border-light rounded-xl p-8 w-[500px] max-h-[80vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="bg-background border border-border-light rounded-xl p-8 w-[75vw] max-w-4xl max-h-[80vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-6 pb-4 border-b border-border-light">
           <h2 className="text-xl font-bold">Strategy Settings</h2>
           <button 

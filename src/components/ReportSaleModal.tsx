@@ -53,8 +53,8 @@ export function ReportSaleModal({ isOpen, onClose, position, onSubmit }: ReportS
   if (!isOpen) return null
   
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-background border border-border-light rounded-xl w-full max-w-md mx-4">
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="bg-background border border-border-light rounded-xl w-[75vw] max-w-4xl mx-4">
         {/* Header */}
         <div className="flex justify-between items-center p-5 border-b border-border-light">
           <h2 className="text-xl font-bold">Report Sale - {position.symbol}</h2>

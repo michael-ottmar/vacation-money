@@ -49,8 +49,8 @@ export function AddPositionModal({ isOpen, onClose, onSubmit }: AddPositionModal
   if (!isOpen) return null
   
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-background border border-border-light rounded-xl w-full max-w-md mx-4">
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="bg-background border border-border-light rounded-xl w-[75vw] max-w-4xl mx-4">
         {/* Header */}
         <div className="flex justify-between items-center p-5 border-b border-border-light">
           <h2 className="text-xl font-bold">Add New Position</h2>
@@ -127,6 +127,15 @@ export function AddPositionModal({ isOpen, onClose, onSubmit }: AddPositionModal
                 onChange={(e) => setTakeProfit(e.target.value)}
                 className="w-full bg-card-hover border border-border-light text-white p-3 rounded-lg text-sm placeholder:text-muted focus:outline-none focus:border-primary"
                 placeholder="e.g. 50"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Target Gain ($)</label>
+              <input
+                type="number"
+                step="any"
+                className="w-full bg-card-hover border border-border-light text-white p-3 rounded-lg text-sm placeholder:text-muted focus:outline-none focus:border-primary"
+                placeholder="e.g. 5000"
               />
             </div>
           </div>

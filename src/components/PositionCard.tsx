@@ -78,16 +78,22 @@ export function PositionCard({
   return (
     <div className="border border-border-light rounded-lg mb-3 transition-all hover:border-border-lighter bg-card-hover overflow-hidden relative">
       {/* Gradient overlays for profit/loss indicators */}
-      {gainPercent >= 0 && progressToTarget > 20 && (
+      {gainPercent >= 0 && progressToTarget > 10 && (
         <div 
-          className="absolute inset-0 bg-gradient-to-tl from-success/10 via-transparent to-transparent pointer-events-none"
-          style={{ opacity: Math.min(progressToTarget / 100, 0.5) }}
+          className="absolute inset-0 bg-gradient-to-tl from-success/20 via-success/5 to-transparent pointer-events-none"
+          style={{ 
+            opacity: Math.min(progressToTarget / 100, 0.8),
+            background: `radial-gradient(circle at bottom right, rgba(34, 197, 94, ${0.15 * (progressToTarget / 100)}) 0%, transparent 70%)`
+          }}
         />
       )}
-      {gainPercent < 0 && progressToStopLoss > 20 && (
+      {gainPercent < 0 && progressToStopLoss > 10 && (
         <div 
-          className="absolute inset-0 bg-gradient-to-tr from-error/10 via-transparent to-transparent pointer-events-none"
-          style={{ opacity: Math.min(progressToStopLoss / 100, 0.5) }}
+          className="absolute inset-0 bg-gradient-to-tr from-error/20 via-error/5 to-transparent pointer-events-none"
+          style={{ 
+            opacity: Math.min(progressToStopLoss / 100, 0.8),
+            background: `radial-gradient(circle at bottom left, rgba(239, 68, 68, ${0.15 * (progressToStopLoss / 100)}) 0%, transparent 70%)`
+          }}
         />
       )}
       
