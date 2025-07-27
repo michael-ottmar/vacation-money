@@ -54,27 +54,47 @@ export function AddPositionModal({ isOpen, onClose, onSubmit }: AddPositionModal
         {/* Header */}
         <div className="flex justify-between items-center p-5 border-b border-border-light">
           <h2 className="text-xl font-bold">Add New Position</h2>
-          <button 
-            onClick={onClose}
-            className="bg-transparent border-none text-[#666] cursor-pointer p-1 hover:text-error transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              type="submit"
+              form="add-position-form"
+              className="bg-primary hover:bg-primary-hover text-white px-4 py-1.5 rounded-md text-sm transition-colors"
+            >
+              Add Position
+            </button>
+            <button 
+              onClick={onClose}
+              className="bg-transparent border-none text-[#666] cursor-pointer p-1 hover:text-error transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
         
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-5 space-y-4">
-          {/* Symbol */}
-          <div>
-            <label className="block text-sm font-medium mb-2">Symbol</label>
-            <input
-              type="text"
-              value={symbol}
-              onChange={(e) => setSymbol(e.target.value)}
-              className="w-full bg-card-hover border border-border-light text-white p-3 rounded-lg text-sm placeholder:text-muted focus:outline-none focus:border-primary"
-              placeholder="e.g. SOL, BTC, AAPL"
-              required
-            />
+        <form id="add-position-form" onSubmit={handleSubmit} className="p-5 space-y-4">
+          {/* Symbol and Target Gain */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">Symbol</label>
+              <input
+                type="text"
+                value={symbol}
+                onChange={(e) => setSymbol(e.target.value)}
+                className="w-full bg-card-hover border border-border-light text-white p-3 rounded-lg text-sm placeholder:text-muted focus:outline-none focus:border-primary"
+                placeholder="e.g. SOL, BTC, AAPL"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Target Gain ($)</label>
+              <input
+                type="number"
+                step="any"
+                className="w-full bg-card-hover border border-border-light text-white p-3 rounded-lg text-sm placeholder:text-muted focus:outline-none focus:border-primary"
+                placeholder="e.g. 5000"
+              />
+            </div>
           </div>
           
           {/* Quantity & Cost Basis */}
@@ -141,23 +161,6 @@ export function AddPositionModal({ isOpen, onClose, onSubmit }: AddPositionModal
               placeholder="Entry reasoning, strategy, etc."
               rows={3}
             />
-          </div>
-          
-          {/* Actions */}
-          <div className="flex gap-3 pt-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 py-2.5 px-4 border border-border-light bg-transparent text-white rounded-lg cursor-pointer text-sm transition-all hover:bg-card-hover"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="flex-1 py-2.5 px-4 bg-primary hover:bg-primary-hover text-white rounded-lg cursor-pointer text-sm transition-all"
-            >
-              Add Position
-            </button>
           </div>
         </form>
       </div>
