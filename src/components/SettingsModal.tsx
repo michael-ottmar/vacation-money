@@ -28,7 +28,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
       <div className="bg-background border border-border-light rounded-xl p-8 w-[75vw] max-w-4xl max-h-[80vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6 pb-4 border-b border-border-light">
           <h2 className="text-xl font-bold">Strategy Settings</h2>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <button
               onClick={() => setSilenceAlerts(!silenceAlerts)}
               className="flex items-center gap-2 text-sm"
@@ -40,6 +40,12 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               <span className={silenceAlerts ? "text-error" : "text-muted"}>
                 {silenceAlerts ? "Alerts Silenced" : "Alerts Active"}
               </span>
+            </button>
+            <button 
+              onClick={() => console.log('Save settings')}
+              className="bg-primary hover:bg-primary-hover text-white px-4 py-1.5 rounded-md text-sm transition-colors"
+            >
+              Save
             </button>
             <button 
               onClick={onClose}
@@ -72,11 +78,17 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 <option value="aggressive">Aggressive Momentum</option>
                 <option value="custom1">My Custom Strategy 1</option>
               </select>
+              <input
+                type="text"
+                placeholder="Strategy name..."
+                className="bg-card-hover border border-border-light text-white px-3 py-1 rounded-md text-sm flex-1 max-w-xs"
+                defaultValue={selectedStrategy === 'default' ? 'Default Strategy' : ''}
+              />
             </div>
             <textarea
               value={strategyText}
               onChange={(e) => setStrategyText(e.target.value)}
-              className="w-full bg-card-hover border border-border-light text-white p-3 rounded-md min-h-[120px] text-sm"
+              className="w-full bg-card-hover border border-border-light text-white p-3 rounded-md min-h-[200px] text-sm"
               placeholder="Describe your trading strategy..."
             />
           </div>
@@ -107,33 +119,26 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             </div>
           </div>
 
-          <div>
-            <label className="block mb-2 text-muted text-sm">Risk Tolerance</label>
-            <select className="w-full bg-card-hover border border-border-light text-white p-2.5 rounded-md">
-              <option>Conservative</option>
-              <option selected>Aggressive</option>
-              <option>YOLO</option>
-            </select>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block mb-2 text-muted text-sm">Risk Tolerance</label>
+              <select className="w-full bg-card-hover border border-border-light text-white p-2.5 rounded-md">
+                <option>Conservative</option>
+                <option selected>Aggressive</option>
+                <option>YOLO</option>
+              </select>
+            </div>
+            <div>
+              <label className="block mb-2 text-muted text-sm">Estimated Tax Rate</label>
+              <input 
+                type="text" 
+                className="w-full bg-card-hover border border-border-light text-white p-2.5 rounded-md"
+                defaultValue="25%"
+              />
+            </div>
           </div>
 
 
-          <div>
-            <label className="block mb-2 text-muted text-sm">Estimated Tax Rate</label>
-            <input 
-              type="text" 
-              className="w-full bg-card-hover border border-border-light text-white p-2.5 rounded-md"
-              defaultValue="25%"
-            />
-          </div>
-
-          <div>
-            <label className="block mb-2 text-muted text-sm">Alert Frequency</label>
-            <select className="w-full bg-card-hover border border-border-light text-white p-2.5 rounded-md">
-              <option>Max 3 per day</option>
-              <option selected>Max 5 per day</option>
-              <option>Unlimited</option>
-            </select>
-          </div>
 
           <div className="grid grid-cols-3 gap-4">
             <div>
@@ -165,19 +170,28 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             </div>
           </div>
 
-          <div>
-            <label className="block mb-2 text-muted text-sm">Phone Number for Alerts</label>
-            <input 
-              type="tel" 
-              className="w-full bg-card-hover border border-border-light text-white p-2.5 rounded-md"
-              placeholder="+1 (555) 123-4567"
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block mb-2 text-muted text-sm">Phone Number for Alerts</label>
+              <input 
+                type="tel" 
+                className="w-full bg-card-hover border border-border-light text-white p-2.5 rounded-md"
+                placeholder="+1 (555) 123-4567"
+              />
+            </div>
+            <div>
+              <label className="block mb-2 text-muted text-sm">Alert Frequency</label>
+              <select className="w-full bg-card-hover border border-border-light text-white p-2.5 rounded-md">
+                <option value="1">Max 1 per day</option>
+                <option value="5">Max 5 per day</option>
+                <option value="10" selected>Max 10 per day</option>
+                <option value="15">Max 15 per day</option>
+                <option value="20">Max 20 per day</option>
+              </select>
+            </div>
           </div>
         </div>
 
-        <button className="w-full mt-8 bg-primary hover:bg-primary-hover text-white py-2.5 rounded-md transition-colors">
-          Save Settings
-        </button>
       </div>
     </div>
   )
