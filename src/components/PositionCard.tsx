@@ -76,8 +76,22 @@ export function PositionCard({
   const aiTargetPosition = ((mockAnalystTargets.aiRecommended - mockAnalystTargets.low) / (mockAnalystTargets.high - mockAnalystTargets.low) * 100)
 
   return (
-    <div className="border border-border-light rounded-lg mb-3 transition-all hover:border-border-lighter bg-card-hover overflow-hidden">
-      <div className="flex">
+    <div className="border border-border-light rounded-lg mb-3 transition-all hover:border-border-lighter bg-card-hover overflow-hidden relative">
+      {/* Gradient overlays for profit/loss indicators */}
+      {gainPercent >= 0 && progressToTarget > 20 && (
+        <div 
+          className="absolute inset-0 bg-gradient-to-tl from-success/10 via-transparent to-transparent pointer-events-none"
+          style={{ opacity: Math.min(progressToTarget / 100, 0.5) }}
+        />
+      )}
+      {gainPercent < 0 && progressToStopLoss > 20 && (
+        <div 
+          className="absolute inset-0 bg-gradient-to-tr from-error/10 via-transparent to-transparent pointer-events-none"
+          style={{ opacity: Math.min(progressToStopLoss / 100, 0.5) }}
+        />
+      )}
+      
+      <div className="flex relative">
         {/* Left side - Position details */}
         <div 
           className="flex-1 p-4 cursor-pointer"
@@ -99,19 +113,6 @@ export function PositionCard({
               <ChevronUp className="w-4 h-4 text-muted" /> : 
               <ChevronDown className="w-4 h-4 text-muted" />
             }
-            <button 
-              onClick={(e) => {
-                e.stopPropagation()
-                setNotificationsEnabled(!notificationsEnabled)
-              }}
-              className="ml-auto p-1 hover:bg-card rounded transition-colors"
-              title={notificationsEnabled ? "Notifications enabled" : "Notifications disabled"}
-            >
-              {notificationsEnabled ? 
-                <Bell className="w-4 h-4 text-primary" /> : 
-                <BellOff className="w-4 h-4 text-muted" />
-              }
-            </button>
           </div>
 
           {/* Details Grid - 3 columns */}
@@ -145,20 +146,20 @@ export function PositionCard({
 
         {/* Right side - Target value visualization */}
         <div className="w-[200px] flex flex-col p-4 border-l border-border-light relative">
-          {/* Progress bar background */}
-          <div className="absolute inset-0">
-            {gainPercent >= 0 ? (
-              <div 
-                className="absolute inset-y-0 left-0 bg-success/10"
-                style={{ width: `${progressToTarget}%` }}
-              />
-            ) : (
-              <div 
-                className="absolute inset-y-0 right-0 bg-error/10"
-                style={{ width: `${progressToStopLoss}%` }}
-              />
-            )}
-          </div>
+          {/* Notification bell in top right */}
+          <button 
+            onClick={(e) => {
+              e.stopPropagation()
+              setNotificationsEnabled(!notificationsEnabled)
+            }}
+            className="absolute top-2 right-2 p-1 hover:bg-card rounded transition-colors z-20"
+            title={notificationsEnabled ? "Notifications enabled" : "Notifications disabled"}
+          >
+            {notificationsEnabled ? 
+              <Bell className="w-4 h-4 text-primary" /> : 
+              <BellOff className="w-4 h-4 text-muted" />
+            }
+          </button>
           
           {/* Target value display */}
           <div className="relative z-10 flex-1 flex flex-col items-center justify-center">
