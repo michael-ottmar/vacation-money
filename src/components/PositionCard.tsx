@@ -76,7 +76,7 @@ export function PositionCard({
   const aiTargetPosition = ((mockAnalystTargets.aiRecommended - mockAnalystTargets.low) / (mockAnalystTargets.high - mockAnalystTargets.low) * 100)
 
   return (
-    <div className="border border-border-light rounded-lg mb-3 transition-all hover:border-border-lighter bg-card-hover overflow-hidden relative">
+    <div className="border border-border-light rounded-lg mb-3 transition-all hover:border-border-lighter bg-card-hover overflow-hidden relative min-h-[160px]">
       {/* Gradient overlays for profit/loss indicators */}
       {gainPercent >= 0 && progressToTarget > 10 && (
         <div 
@@ -100,13 +100,13 @@ export function PositionCard({
       <div className="flex relative">
         {/* Left side - Position details */}
         <div 
-          className="flex-1 p-4 cursor-pointer"
+          className="flex-1 p-5 cursor-pointer"
           onClick={() => setIsExpanded(!isExpanded)}
         >
           {/* Header */}
-          <div className="flex items-center gap-2 mb-3">
-            <span className="text-xl font-bold">{symbol}</span>
-            <span className="text-lg">${price.toFixed(2)}</span>
+          <div className="flex items-center gap-3 mb-6">
+            <span className="text-2xl font-bold">{symbol}</span>
+            <span className="text-xl">${price.toFixed(2)}</span>
             <span className={cn(
               "text-sm px-2 py-1 rounded",
               isPositive 
@@ -121,37 +121,53 @@ export function PositionCard({
             }
           </div>
 
-          {/* Details Grid - 3 columns */}
-          <div className="grid grid-cols-3 gap-x-4 gap-y-3 text-sm">
-            <div>
-              <div className="text-muted text-xs mb-0.5">Cost Basis</div>
-              <div className="font-medium">${costBasis.toFixed(2)}</div>
+          {/* Details Grid - 3 columns with specific pairing */}
+          <div className="grid grid-cols-3 gap-x-8 gap-y-1 text-base">
+            {/* Column 1: Cost Basis & Quantity */}
+            <div className="space-y-1">
+              <div className="flex gap-2 items-baseline">
+                <span className="text-muted">Cost Basis:</span>
+                <span className="font-medium">${costBasis.toFixed(2)}</span>
+              </div>
+              <div className="flex gap-2 items-baseline">
+                <span className="text-muted">Quantity:</span>
+                <span className="font-medium">{quantity}</span>
+              </div>
             </div>
-            <div>
-              <div className="text-muted text-xs mb-0.5">Quantity</div>
-              <div className="font-medium">{quantity.toLocaleString()}</div>
+            
+            {/* Column 2: Invested & Current Value */}
+            <div className="space-y-1">
+              <div className="flex gap-2 items-baseline">
+                <span className="text-muted">Invested:</span>
+                <span className="font-medium">${(costBasis * quantity).toLocaleString()}</span>
+              </div>
+              <div className="flex gap-2 items-baseline">
+                <span className="text-muted">Current value:</span>
+                <span className="font-medium">
+                  ${totalValue.toLocaleString()} 
+                  <span className={cn("text-sm ml-1", isGainPositive ? "text-success" : "text-error")}>
+                    {isGainPositive ? '+' : ''}{gainPercent.toFixed(1)}%
+                  </span>
+                </span>
+              </div>
             </div>
-            <div>
-              <div className="text-muted text-xs mb-0.5">Invested</div>
-              <div className="font-medium">${(costBasis * quantity).toLocaleString()}</div>
-            </div>
-            <div>
-              <div className="text-muted text-xs mb-0.5">Current Value</div>
-              <div className="font-medium">${totalValue.toLocaleString()} <span className={cn("text-xs", isGainPositive ? "text-success" : "text-error")}>{isGainPositive ? '+' : ''}{gainPercent.toFixed(1)}%</span></div>
-            </div>
-            <div>
-              <div className="text-muted text-xs mb-0.5">Stop Loss</div>
-              <div className="font-medium">{stopLoss}%</div>
-            </div>
-            <div>
-              <div className="text-muted text-xs mb-0.5">Take Profit</div>
-              <div className="font-medium">+{takeProfit}%</div>
+            
+            {/* Column 3: Stop Loss & Take Profit */}
+            <div className="space-y-1">
+              <div className="flex gap-2 items-baseline">
+                <span className="text-muted">Stop Loss:</span>
+                <span className="font-medium">{stopLoss}%</span>
+              </div>
+              <div className="flex gap-2 items-baseline">
+                <span className="text-muted">Take Profit:</span>
+                <span className="font-medium text-success">+{takeProfit}%</span>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Right side - Target value visualization */}
-        <div className="w-[200px] flex flex-col p-4 border-l border-border-light relative">
+        <div className="w-[200px] flex flex-col p-5 border-l border-border-light relative">
           {/* Notification bell in top right */}
           <button 
             onClick={(e) => {

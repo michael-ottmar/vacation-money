@@ -134,7 +134,7 @@ function App() {
       {/* Fixed Header */}
       <header className="fixed top-0 left-0 right-0 bg-background z-40 border-b border-border-light">
         <div className="max-w-[1400px] mx-auto p-5 flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Portfolio Tracker</h1>
+          <h1 className="text-2xl font-bold">Goal Tracker</h1>
           
           {/* Progress Bar */}
           <div className="flex-1 mx-8 max-w-2xl">
