@@ -8,7 +8,7 @@ export const DEFAULT_GOAL_VALUE = 1100000
 export const DEFAULT_TAX_RATE = 0.25
 
 // Strategy Constants
-export const DEFAULT_STRATEGY = `My approach focuses on swing trading high-conviction positions in emerging tech and crypto assets. I look for asymmetric risk/reward setups with 3-5x potential over 6-18 months. Core positions in crypto infrastructure (SOL, LINK), uranium/nuclear plays (CCJ, NXE), and disruptive tech (RKLB, PLTR). I size positions based on conviction level and use wider stops on volatile assets. Taking partial profits at 2x to recover cost basis while letting winners run.`
+export const DEFAULT_STRATEGY = `My approach focuses on swing trading high-conviction positions in emerging tech and crypto assets. I look for asymmetric risk/reward setups with 3-5x potential over 6-18 months. Core positions in crypto infrastructure (SOL, LINK), uranium/nuclear plays (CCJ, NXE), and disruptive tech (RKLB, PLTR). I size positions based on conviction level and use wider stops on volatile assets. I target 5-10% gains on swing trades, exiting the full position when the target is reached to capture consistent profits.`
 
 export const RISK_TOLERANCE_OPTIONS = ['Conservative', 'Moderate', 'Aggressive'] as const
 export const ALERT_FREQUENCY_OPTIONS = [1, 5, 10, 15, 20] as const
