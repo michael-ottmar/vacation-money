@@ -24,6 +24,10 @@ export function WatchlistItem({
   const displayTrigger = !isExpanded && needsTruncation 
     ? trigger.substring(0, 77) + '...' 
     : trigger
+    
+  // Mock change percentage for display
+  const changePercent = isAiSuggested ? 5.2 : -2.1
+  const isPositive = changePercent >= 0
 
   return (
     <div className={cn(
@@ -39,6 +43,14 @@ export function WatchlistItem({
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
             <span className="font-bold">{symbol}</span>
+            <span className={cn(
+              "text-xs px-1.5 py-0.5 rounded",
+              isPositive 
+                ? "text-success bg-success/10" 
+                : "text-error bg-error/10"
+            )}>
+              {isPositive ? '+' : ''}{Math.abs(changePercent).toFixed(1)}%
+            </span>
             {needsTruncation && (
               isExpanded ? 
                 <ChevronUp className="w-3 h-3 text-muted" /> : 
