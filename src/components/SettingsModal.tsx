@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { X, BellOff, Bell } from 'lucide-react'
+import { X, BellOff, Bell, Clock } from 'lucide-react'
 
 interface SettingsModalProps {
   isOpen: boolean
@@ -61,7 +61,6 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
           {/* Strategy Selection and Text */}
           <div>
             <div className="flex items-center gap-4 mb-3">
-              <label className="block text-muted text-sm">General Strategy</label>
               <select 
                 value={selectedStrategy}
                 onChange={(e) => {
@@ -143,23 +142,35 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
           <div className="grid grid-cols-3 gap-4">
             <div>
               <label className="block mb-2 text-muted text-sm">Morning Analysis</label>
-              <input 
-                type="time" 
-                className="w-full bg-card-hover border border-border-light text-white p-2.5 rounded-md"
-                defaultValue="07:00"
-              />
+              <div className="relative">
+                <select className="w-full bg-card-hover border border-border-light text-white p-2.5 pr-10 rounded-md appearance-none">
+                  <option value="none">None</option>
+                  <option value="05:00">5:00 AM</option>
+                  <option value="06:00">6:00 AM</option>
+                  <option value="07:00" selected>7:00 AM</option>
+                  <option value="08:00">8:00 AM</option>
+                  <option value="09:00">9:00 AM</option>
+                </select>
+                <Clock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted pointer-events-none" />
+              </div>
             </div>
             <div>
               <label className="block mb-2 text-muted text-sm">Afternoon Analysis</label>
-              <input 
-                type="time" 
-                className="w-full bg-card-hover border border-border-light text-white p-2.5 rounded-md"
-                defaultValue="14:00"
-              />
+              <div className="relative">
+                <select className="w-full bg-card-hover border border-border-light text-white p-2.5 pr-10 rounded-md appearance-none">
+                  <option value="none">None</option>
+                  <option value="12:00">12:00 PM</option>
+                  <option value="13:00">1:00 PM</option>
+                  <option value="14:00" selected>2:00 PM</option>
+                  <option value="15:00">3:00 PM</option>
+                  <option value="16:00">4:00 PM</option>
+                </select>
+                <Clock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted pointer-events-none" />
+              </div>
             </div>
             <div>
               <label className="block mb-2 text-muted text-sm">Time Zone</label>
-              <select className="w-full bg-card-hover border border-border-light text-white p-2.5 rounded-md">
+              <select className="w-full bg-card-hover border border-border-light text-white p-2.5 rounded-md h-[42px]">
                 <option value="ET">Eastern Time</option>
                 <option value="CT">Central Time</option>
                 <option value="MT">Mountain Time</option>
