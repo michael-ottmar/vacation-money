@@ -20,6 +20,7 @@ function App() {
     userWatchlist, 
     upcomingIPOs,
     portfolioStats,
+    settings,
     reportSale,
     addToWatchlist,
     removeFromWatchlist,
@@ -37,13 +38,14 @@ function App() {
   const [prefilledStopLoss, setPrefilledStopLoss] = useState<number | undefined>()
   const [prefilledTakeProfit, setPrefilledTakeProfit] = useState<number | undefined>()
   
-  // Calculate total value including realized gains
-  const totalValue = portfolioStats.currentValue + portfolioStats.realizedGains
+  // Calculate progress based on starting value + realized gains only
+  const realizedProgress = settings.startingValue + portfolioStats.realizedGains
   
-  // Calculate progress percentages
-  const progressPercent = ((totalValue / portfolioStats.goalValue) * 100).toFixed(0)
-  const afterTaxValue = totalValue - portfolioStats.taxImpact
-  const afterTaxPercent = ((afterTaxValue / portfolioStats.goalValue) * 100).toFixed(0)
+  // Calculate progress percentages based on realized gains only
+  const progressPercent = ((realizedProgress / portfolioStats.goalValue) * 100).toFixed(0)
+  const taxImpactOnRealized = portfolioStats.realizedGains * portfolioStats.taxRate
+  const afterTaxProgress = realizedProgress - taxImpactOnRealized
+  const afterTaxPercent = ((afterTaxProgress / portfolioStats.goalValue) * 100).toFixed(0)
 
 
   return (
@@ -66,9 +68,9 @@ function App() {
                 className="absolute top-0 left-0 bg-gradient-to-r from-primary to-green-500 h-full"
                 style={{ width: `${progressPercent}%` }}
               />
-              {/* Current value on left */}
+              {/* Current realized progress on left */}
               <div className="absolute left-3 h-full flex items-center font-bold text-sm">
-                ${(totalValue / 1000).toFixed(0)}K
+                ${(realizedProgress / 1000).toFixed(0)}K
               </div>
               {/* Goal value on right */}
               <div className="absolute right-3 h-full flex items-center font-bold text-sm">
@@ -168,7 +170,7 @@ function App() {
           </div>
           <div className="bg-card border border-border rounded-lg p-4 text-center">
             <div className="text-xs text-muted mb-2">Tax Impact</div>
-            <div className="text-2xl font-bold">-${portfolioStats.taxImpact.toLocaleString()}</div>
+            <div className="text-2xl font-bold">-${taxImpactOnRealized.toLocaleString()}</div>
             <div className="text-sm text-error mt-1">{(portfolioStats.taxRate * 100).toFixed(0)}% rate</div>
           </div>
         </div>

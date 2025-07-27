@@ -50,6 +50,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [positions, setPositions] = useState<Position[]>(mockPositions)
   const [closedPositions, setClosedPositions] = useState<ClosedPosition[]>(mockClosedPositions)
   const [userWatchlist, setUserWatchlist] = useState<WatchlistItem[]>(mockUserWatchlist)
+  const [realizedGains, setRealizedGains] = useState<number>(mockRealizedGains)
   
   const [settings, setSettings] = useState<StrategySettings>({
     strategyName: 'Default Strategy',
@@ -79,8 +80,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     todaysChangePercent: (todaysChange / currentValue) * 100,
     unrealizedGains,
     unrealizedGainsPercent: (unrealizedGains / currentValue) * 100,
-    realizedGains: mockRealizedGains,
-    realizedGainsPercent: (mockRealizedGains / settings.startingValue) * 100,
+    realizedGains: realizedGains,
+    realizedGainsPercent: (realizedGains / settings.startingValue) * 100,
     taxImpact: totalValue * settings.estimatedTaxRate,
     taxRate: settings.estimatedTaxRate
   }
@@ -100,6 +101,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const reportSale = (symbol: string, salePrice: number, quantity: number) => {
     const position = positions.find(p => p.symbol === symbol)
     if (!position) return
+    
+    // Calculate profit/loss for this sale
+    const costBasisForSale = position.costBasis * quantity
+    const saleProceeds = salePrice * quantity
+    const profitLoss = saleProceeds - costBasisForSale
+    
+    // Update realized gains
+    setRealizedGains(prev => prev + profitLoss)
     
     // Create closed position
     const closedPosition: ClosedPosition = {
