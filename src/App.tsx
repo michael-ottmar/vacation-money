@@ -7,6 +7,7 @@ import { SettingsModal } from './components/SettingsModal'
 import { AddPositionModal } from './components/AddPositionModal'
 import { AddToWatchlistModal } from './components/AddToWatchlistModal'
 import { ReportSaleModal } from './components/ReportSaleModal'
+import { MarketStatus } from './components/MarketStatus'
 import { cn } from './lib/utils'
 import { useApp } from './context/AppContext'
 import type { Position } from './types'
@@ -21,6 +22,8 @@ function App() {
     upcomingIPOs,
     portfolioStats,
     settings,
+    marketDataLoading,
+    lastMarketUpdate,
     reportSale,
     addToWatchlist,
     removeFromWatchlist,
@@ -53,7 +56,14 @@ function App() {
       {/* Fixed Header */}
       <header className="fixed top-0 left-0 right-0 bg-background z-40 border-b border-border-light">
         <div className="max-w-[1400px] mx-auto p-5 flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Goal Tracker</h1>
+          <div className="flex items-center gap-4">
+            <h1 className="text-2xl font-bold">Goal Tracker</h1>
+            <MarketStatus 
+              isLive={!marketDataLoading}
+              lastUpdated={lastMarketUpdate}
+              className="text-xs"
+            />
+          </div>
           
           {/* Progress Bar */}
           <div className="flex-1 mx-8 max-w-2xl">

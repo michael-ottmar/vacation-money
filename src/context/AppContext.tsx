@@ -10,6 +10,7 @@ import {
   mockRealizedGains
 } from '../data/mockData'
 import { DEFAULT_STARTING_VALUE, DEFAULT_GOAL_VALUE, DEFAULT_TAX_RATE, DEFAULT_STRATEGY } from '../constants'
+import { useMarketData } from '../hooks/useMarketData'
 
 interface AppContextType {
   // User
@@ -34,6 +35,11 @@ interface AppContextType {
   
   // Portfolio Stats
   portfolioStats: PortfolioStats
+  
+  // Market Data
+  marketDataLoading: boolean
+  marketDataError: string | null
+  lastMarketUpdate: Date | null
   
   // Actions
   addPosition: (position: Position) => void
@@ -67,11 +73,44 @@ export function AppProvider({ children }: { children: ReactNode }) {
     phoneNumber: ''
   })
   
-  // Calculate portfolio stats
-  const currentValue = positions.reduce((sum, pos) => sum + pos.totalValue, 0)
-  const totalValue = currentValue + mockRealizedGains
-  const unrealizedGains = positions.reduce((sum, pos) => sum + pos.gain, 0)
-  const todaysChange = positions.reduce((sum, pos) => sum + (pos.totalValue * (pos.change / 100)), 0)
+  // Get all unique symbols from positions
+  const positionSymbols = positions.map(p => p.symbol)
+  
+  // Fetch real-time market data
+  const { 
+    prices: marketPrices, 
+    loading: marketDataLoading,
+    error: marketDataError,
+    lastUpdated: lastMarketUpdate
+  } = useMarketData(positionSymbols, {
+    refreshInterval: 30000, // Refresh every 30 seconds
+    enabled: positionSymbols.length > 0
+  })
+  
+  // Update positions with real-time prices
+  const positionsWithLivePrices = positions.map(position => {
+    const livePrice = marketPrices.get(position.symbol)
+    if (!livePrice) return position
+    
+    const newTotalValue = livePrice.price * position.quantity
+    const newGain = newTotalValue - (position.costBasis * position.quantity)
+    const newGainPercent = ((livePrice.price - position.costBasis) / position.costBasis) * 100
+    
+    return {
+      ...position,
+      price: livePrice.price,
+      change: livePrice.changePercent,
+      totalValue: newTotalValue,
+      gain: newGain,
+      gainPercent: newGainPercent
+    }
+  })
+  
+  // Calculate portfolio stats using live prices
+  const currentValue = positionsWithLivePrices.reduce((sum, pos) => sum + pos.totalValue, 0)
+  const totalValue = currentValue + realizedGains
+  const unrealizedGains = positionsWithLivePrices.reduce((sum, pos) => sum + pos.gain, 0)
+  const todaysChange = positionsWithLivePrices.reduce((sum, pos) => sum + (pos.totalValue * (pos.change / 100)), 0)
   
   const portfolioStats: PortfolioStats = {
     currentValue,
@@ -147,7 +186,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const value: AppContextType = {
     user,
     setUser,
-    positions,
+    positions: positionsWithLivePrices,
     setPositions,
     closedPositions,
     setClosedPositions,
@@ -158,6 +197,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
     settings,
     updateSettings,
     portfolioStats,
+    marketDataLoading,
+    marketDataError,
+    lastMarketUpdate,
     addPosition,
     removePosition,
     reportSale,
