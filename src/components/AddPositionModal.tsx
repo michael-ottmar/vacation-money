@@ -129,15 +129,6 @@ export function AddPositionModal({ isOpen, onClose, onSubmit }: AddPositionModal
                 placeholder="e.g. 50"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium mb-2">Target Gain ($)</label>
-              <input
-                type="number"
-                step="any"
-                className="w-full bg-card-hover border border-border-light text-white p-3 rounded-lg text-sm placeholder:text-muted focus:outline-none focus:border-primary"
-                placeholder="e.g. 5000"
-              />
-            </div>
           </div>
           
           {/* Notes */}
