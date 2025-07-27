@@ -142,7 +142,7 @@ export function PositionCard({
                 <span className="font-medium">${(costBasis * quantity).toLocaleString()}</span>
               </div>
               <div className="flex gap-2 items-baseline">
-                <span className="text-muted">Current value:</span>
+                <span className="text-muted">Currently:</span>
                 <span className="font-medium">
                   ${totalValue.toLocaleString()} 
                   <span className={cn("text-sm ml-1", isGainPositive ? "text-success" : "text-error")}>

@@ -7,127 +7,38 @@ import { SettingsModal } from './components/SettingsModal'
 import { AddPositionModal } from './components/AddPositionModal'
 import { ReportSaleModal } from './components/ReportSaleModal'
 import { cn } from './lib/utils'
+import { useApp } from './context/AppContext'
+import type { Position } from './types'
 
 function App() {
+  const { 
+    user, 
+    positions, 
+    closedPositions, 
+    aiRecommendations, 
+    userWatchlist, 
+    upcomingIPOs,
+    portfolioStats,
+    reportSale,
+    removeFromWatchlist,
+    addPosition
+  } = useApp()
+  
   const [showSettings, setShowSettings] = useState(false)
   const [showChat, setShowChat] = useState(false)
   const [showAddPosition, setShowAddPosition] = useState(false)
-  const [selectedPositionForSale, setSelectedPositionForSale] = useState<typeof positions[0] | null>(null)
+  const [selectedPositionForSale, setSelectedPositionForSale] = useState<Position | null>(null)
   const [activeTab, setActiveTab] = useState<'active' | 'history'>('active')
   const [showUserMenu, setShowUserMenu] = useState(false)
   
-  // Mock user data - will come from auth later
-  const user = {
-    email: 'user@example.com',
-    name: 'John Doe',
-    initials: 'JD'
-  }
-  
-  // User configurable values (will come from settings/database later)
-  const currentValue = 400000 // TODO: Make this dynamic from settings
-  const goalValue = 1100000 // TODO: Make this dynamic from settings
-  const taxRate = 0.25 // 25% estimated tax rate
-  const realizedGains = 12500 // Placeholder for realized gains
-  
   // Calculate total value including realized gains
-  const totalValue = currentValue + realizedGains
+  const totalValue = portfolioStats.currentValue + portfolioStats.realizedGains
   
   // Calculate progress percentages
-  const progressPercent = ((totalValue / goalValue) * 100).toFixed(0)
-  const taxImpact = totalValue * taxRate
-  const afterTaxValue = totalValue - taxImpact
-  const afterTaxPercent = ((afterTaxValue / goalValue) * 100).toFixed(0)
+  const progressPercent = ((totalValue / portfolioStats.goalValue) * 100).toFixed(0)
+  const afterTaxValue = totalValue - portfolioStats.taxImpact
+  const afterTaxPercent = ((afterTaxValue / portfolioStats.goalValue) * 100).toFixed(0)
 
-  // Mock data for now
-  const positions = [
-    {
-      symbol: 'SOL',
-      price: 175.43,
-      change: 5.2,
-      costBasis: 140.00,
-      quantity: 285.7,
-      totalValue: 50122,
-      gain: 10122,
-      gainPercent: 25.3,
-      stopLoss: -15,
-      takeProfit: 50
-    },
-    {
-      symbol: 'LINK',
-      price: 17.82,
-      change: -2.1,
-      costBasis: 16.50,
-      quantity: 3636,
-      totalValue: 64793,
-      gain: 4793,
-      gainPercent: 8.0,
-      stopLoss: -20,
-      takeProfit: 100
-    },
-    {
-      symbol: 'CCJ',
-      price: 52.15,
-      change: 3.8,
-      costBasis: 48.00,
-      quantity: 416,
-      totalValue: 21694,
-      gain: 1726,
-      gainPercent: 8.6,
-      stopLoss: -25,
-      takeProfit: 150
-    }
-  ]
-
-  // Always show 3 AI recommendations at the top
-  const aiRecommendations = [
-    { symbol: 'ONDO', trigger: 'Breaking out of consolidation pattern. RWA narrative gaining traction with institutional adoption. Entry below $0.70 offers favorable risk/reward with targets at $1.20.' },
-    { symbol: 'MSTR', trigger: 'Bitcoin leverage play trading at discount to NAV. Strong accumulation pattern forming. Consider entry on any pullback to $340 support level.' },
-    { symbol: 'NXE', trigger: 'Nuclear sector momentum building on AI data center demand. Chart showing cup & handle formation. Accumulate under $6 for potential breakout to $8+.' }
-  ]
-  
-  // User's personal watchlist
-  const userWatchlist = [
-    { symbol: 'RKLB', trigger: 'Space sector leader. Wait for breakout above $8.50 resistance with volume confirmation.' },
-    { symbol: 'SUI', trigger: 'L1 competitor showing strength. Volume spike + RSI < 40 would signal oversold bounce opportunity.' },
-    { symbol: 'PLTR', trigger: 'AI defense play. Watching for pullback to 50-day MA around $42 for entry.' }
-  ]
-
-  const upcomingIPOs = [
-    { symbol: 'Anduril', trigger: 'Defense tech unicorn valued at $8.5B. Palmer Luckey\'s military drone company expected Q4 2025. Watch for S-1 filing.' },
-    { symbol: 'Databricks', trigger: 'AI/ML platform leader. Last valued at $43B. Strong revenue growth could support $60B+ IPO valuation in 2025.' }
-  ]
-  
-  // Mock closed positions for history tab
-  const closedPositions = [
-    {
-      symbol: 'BTC',
-      price: 65000,
-      change: 0,
-      costBasis: 42000,
-      quantity: 0.5,
-      totalValue: 32500,
-      gain: 11500,
-      gainPercent: 54.8,
-      stopLoss: -20,
-      takeProfit: 50,
-      closedDate: '2024-03-15',
-      closedPrice: 65000
-    },
-    {
-      symbol: 'TSLA',
-      price: 180,
-      change: 0,
-      costBasis: 220,
-      quantity: 50,
-      totalValue: 9000,
-      gain: -2000,
-      gainPercent: -18.2,
-      stopLoss: -15,
-      takeProfit: 30,
-      closedDate: '2024-02-28',
-      closedPrice: 180
-    }
-  ]
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -155,7 +66,7 @@ function App() {
               </div>
               {/* Goal value on right */}
               <div className="absolute right-3 h-full flex items-center font-bold text-sm">
-                ${(goalValue / 1000).toFixed(0)}K
+                ${(portfolioStats.goalValue / 1000).toFixed(0)}K
               </div>
             </div>
           </div>
@@ -183,14 +94,14 @@ function App() {
                 onClick={() => setShowUserMenu(!showUserMenu)}
                 className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-semibold hover:bg-primary-hover transition-colors"
               >
-                {user.initials || <User className="w-5 h-5" />}
+                {user?.initials || <User className="w-5 h-5" />}
               </button>
               
               {showUserMenu && (
                 <div className="absolute right-0 top-full mt-2 bg-card border border-border-light rounded-lg py-2 w-48 z-10">
                   <div className="px-4 py-2 border-b border-border-light">
-                    <div className="font-semibold text-sm">{user.name}</div>
-                    <div className="text-xs text-muted">{user.email}</div>
+                    <div className="font-semibold text-sm">{user?.name || 'Guest'}</div>
+                    <div className="text-xs text-muted">{user?.email || 'Not logged in'}</div>
                   </div>
                   <button
                     onClick={() => {
@@ -215,23 +126,44 @@ function App() {
         <div className="grid grid-cols-4 gap-5 mb-8">
           <div className="bg-card border border-border rounded-lg p-4 text-center">
             <div className="text-xs text-muted mb-2">Today's Change</div>
-            <div className="text-2xl font-bold">+$4,238</div>
-            <div className="text-sm text-success mt-1">+1.06%</div>
+            <div className="text-2xl font-bold">
+              {portfolioStats.todaysChange >= 0 ? '+' : ''}
+              ${Math.abs(portfolioStats.todaysChange).toLocaleString()}
+            </div>
+            <div className={cn(
+              "text-sm mt-1",
+              portfolioStats.todaysChangePercent >= 0 ? "text-success" : "text-error"
+            )}>
+              {portfolioStats.todaysChangePercent >= 0 ? '+' : ''}
+              {portfolioStats.todaysChangePercent.toFixed(2)}%
+            </div>
           </div>
           <div className="bg-card border border-border rounded-lg p-4 text-center">
             <div className="text-xs text-muted mb-2">Unrealized Gains</div>
-            <div className="text-2xl font-bold">$47,392</div>
-            <div className="text-sm text-success mt-1">+11.8%</div>
+            <div className="text-2xl font-bold">${portfolioStats.unrealizedGains.toLocaleString()}</div>
+            <div className={cn(
+              "text-sm mt-1",
+              portfolioStats.unrealizedGainsPercent >= 0 ? "text-success" : "text-error"
+            )}>
+              {portfolioStats.unrealizedGainsPercent >= 0 ? '+' : ''}
+              {portfolioStats.unrealizedGainsPercent.toFixed(1)}%
+            </div>
           </div>
           <div className="bg-card border border-border rounded-lg p-4 text-center">
             <div className="text-xs text-muted mb-2">Realized Gains</div>
-            <div className="text-2xl font-bold">$12,500</div>
-            <div className="text-sm text-success mt-1">+3.1%</div>
+            <div className="text-2xl font-bold">${portfolioStats.realizedGains.toLocaleString()}</div>
+            <div className={cn(
+              "text-sm mt-1",
+              portfolioStats.realizedGainsPercent >= 0 ? "text-success" : "text-error"
+            )}>
+              {portfolioStats.realizedGainsPercent >= 0 ? '+' : ''}
+              {portfolioStats.realizedGainsPercent.toFixed(1)}%
+            </div>
           </div>
           <div className="bg-card border border-border rounded-lg p-4 text-center">
             <div className="text-xs text-muted mb-2">Tax Impact</div>
-            <div className="text-2xl font-bold">-$103,125</div>
-            <div className="text-sm text-error mt-1">25% rate</div>
+            <div className="text-2xl font-bold">-${portfolioStats.taxImpact.toLocaleString()}</div>
+            <div className="text-sm text-error mt-1">{(portfolioStats.taxRate * 100).toFixed(0)}% rate</div>
           </div>
         </div>
 
@@ -348,7 +280,7 @@ function App() {
               <WatchlistItem 
                 key={item.symbol} 
                 {...item}
-                onRemove={() => console.log('Remove', item.symbol)}
+                onRemove={() => removeFromWatchlist(item.symbol)}
                 onTransfer={() => console.log('Transfer to positions:', item.symbol)}
               />
             ))}
@@ -358,7 +290,7 @@ function App() {
               <WatchlistItem 
                 key={item.symbol} 
                 {...item}
-                onRemove={() => console.log('Remove', item.symbol)}
+                onRemove={() => removeFromWatchlist(item.symbol)}
                 onTransfer={() => console.log('Transfer to positions:', item.symbol)}
               />
             ))}
@@ -373,9 +305,21 @@ function App() {
       <AddPositionModal 
         isOpen={showAddPosition} 
         onClose={() => setShowAddPosition(false)}
-        onSubmit={(position) => {
-          console.log('New position:', position)
-          // TODO: Add position to state/database
+        onSubmit={(newPos) => {
+          const position: Position = {
+            symbol: newPos.symbol,
+            price: newPos.costBasis,
+            change: 0,
+            costBasis: newPos.costBasis,
+            quantity: newPos.quantity,
+            totalValue: newPos.costBasis * newPos.quantity,
+            gain: 0,
+            gainPercent: 0,
+            stopLoss: -15,
+            takeProfit: newPos.takeProfit || 50
+          }
+          addPosition(position)
+          setShowAddPosition(false)
         }}
       />
       {selectedPositionForSale && (
@@ -389,8 +333,8 @@ function App() {
             currentPrice: selectedPositionForSale.price
           }}
           onSubmit={(sale) => {
-            console.log('Sale reported:', sale)
-            // TODO: Process sale and update position/move to history
+            reportSale(selectedPositionForSale.symbol, sale.salePrice, sale.quantity)
+            setSelectedPositionForSale(null)
           }}
         />
       )}
