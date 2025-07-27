@@ -5,6 +5,8 @@ interface AddPositionModalProps {
   isOpen: boolean
   onClose: () => void
   prefilledSymbol?: string
+  prefilledStopLoss?: number
+  prefilledTakeProfit?: number
   onSubmit?: (position: {
     symbol: string
     quantity: number
@@ -15,20 +17,26 @@ interface AddPositionModalProps {
   }) => void
 }
 
-export function AddPositionModal({ isOpen, onClose, prefilledSymbol, onSubmit }: AddPositionModalProps) {
+export function AddPositionModal({ isOpen, onClose, prefilledSymbol, prefilledStopLoss, prefilledTakeProfit, onSubmit }: AddPositionModalProps) {
   const [symbol, setSymbol] = useState(prefilledSymbol || '')
   const [quantity, setQuantity] = useState('')
   const [costBasis, setCostBasis] = useState('')
-  const [stopLoss, setStopLoss] = useState('')
-  const [takeProfit, setTakeProfit] = useState('')
+  const [stopLoss, setStopLoss] = useState(prefilledStopLoss?.toString() || '')
+  const [takeProfit, setTakeProfit] = useState(prefilledTakeProfit?.toString() || '')
   const [notes, setNotes] = useState('')
   
-  // Update symbol when prefilledSymbol changes
+  // Update prefilled values when they change
   useEffect(() => {
     if (prefilledSymbol) {
       setSymbol(prefilledSymbol)
     }
-  }, [prefilledSymbol])
+    if (prefilledStopLoss !== undefined) {
+      setStopLoss(prefilledStopLoss.toString())
+    }
+    if (prefilledTakeProfit !== undefined) {
+      setTakeProfit(prefilledTakeProfit.toString())
+    }
+  }, [prefilledSymbol, prefilledStopLoss, prefilledTakeProfit])
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()

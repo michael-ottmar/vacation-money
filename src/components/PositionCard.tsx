@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Bot, ChevronDown, ChevronUp, TrendingUp, Activity, Bell, BellOff, DollarSign, MessageCircle } from 'lucide-react'
+import { Bot, ChevronDown, ChevronUp, TrendingUp, Activity, Bell, BellOff, DollarSign, MessageCircle, RefreshCw } from 'lucide-react'
 import { cn } from '../lib/utils'
 
 interface PositionCardProps {
@@ -15,6 +15,8 @@ interface PositionCardProps {
   takeProfit: number
   onReportSale?: () => void
   onOpenChat?: (context: { symbol: string; metrics: any }) => void
+  buttonText?: string
+  buttonIcon?: 'dollar' | 'refresh'
 }
 
 // Mock data for expanded view - will come from API/AI analysis later
@@ -46,6 +48,8 @@ export function PositionCard({
   takeProfit,
   onReportSale,
   onOpenChat,
+  buttonText = 'Report Sale',
+  buttonIcon = 'dollar',
 }: PositionCardProps) {
   const [isExpanded, setIsExpanded] = useState(false)
   const [notificationsEnabled, setNotificationsEnabled] = useState(true)
@@ -193,7 +197,7 @@ export function PositionCard({
             </div>
           </div>
           
-          {/* Report Sale button */}
+          {/* Report Sale / Repeat Trade button */}
           <button 
             onClick={onReportSale}
             className={cn(
@@ -205,8 +209,12 @@ export function PositionCard({
                 : "border-border-light bg-transparent text-muted hover:border-border-lighter hover:text-white"
             )}
           >
-            <DollarSign className="w-4 h-4 inline mr-1" />
-            Report Sale
+            {buttonIcon === 'refresh' ? (
+              <RefreshCw className="w-4 h-4 inline mr-1" />
+            ) : (
+              <DollarSign className="w-4 h-4 inline mr-1" />
+            )}
+            {buttonText}
           </button>
         </div>
       </div>

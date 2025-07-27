@@ -34,6 +34,8 @@ function App() {
   const [activeTab, setActiveTab] = useState<'active' | 'history'>('active')
   const [showUserMenu, setShowUserMenu] = useState(false)
   const [prefilledSymbol, setPrefilledSymbol] = useState<string>('')
+  const [prefilledStopLoss, setPrefilledStopLoss] = useState<number | undefined>()
+  const [prefilledTakeProfit, setPrefilledTakeProfit] = useState<number | undefined>()
   
   // Calculate total value including realized gains
   const totalValue = portfolioStats.currentValue + portfolioStats.realizedGains
@@ -233,6 +235,15 @@ function App() {
                     <div key={position.symbol + position.closedDate} className="mb-3">
                       <PositionCard 
                         {...position} 
+                        buttonText="Repeat Trade"
+                        buttonIcon="refresh"
+                        onReportSale={() => {
+                          // Pre-fill the Add Position modal with the closed position's settings
+                          setPrefilledSymbol(position.symbol)
+                          setPrefilledStopLoss(position.stopLoss)
+                          setPrefilledTakeProfit(position.takeProfit)
+                          setShowAddPosition(true)
+                        }}
                         onOpenChat={(context) => {
                           console.log('Opening chat with context:', context)
                           setShowChat(true)
@@ -325,8 +336,12 @@ function App() {
         onClose={() => {
           setShowAddPosition(false)
           setPrefilledSymbol('')
+          setPrefilledStopLoss(undefined)
+          setPrefilledTakeProfit(undefined)
         }}
         prefilledSymbol={prefilledSymbol}
+        prefilledStopLoss={prefilledStopLoss}
+        prefilledTakeProfit={prefilledTakeProfit}
         onSubmit={(newPos) => {
           const position: Position = {
             symbol: newPos.symbol,
