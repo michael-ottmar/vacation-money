@@ -50,7 +50,7 @@ export function AddPositionModal({ isOpen, onClose, onSubmit }: AddPositionModal
   
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-background border border-border-light rounded-xl w-[75vw] max-w-4xl mx-4">
+      <div className="bg-background border border-border-light rounded-xl w-[75vw] max-w-4xl h-[85vh] max-h-[900px] mx-4 overflow-y-auto">
         {/* Header */}
         <div className="flex justify-between items-center p-5 border-b border-border-light">
           <h2 className="text-xl font-bold">Add New Position</h2>

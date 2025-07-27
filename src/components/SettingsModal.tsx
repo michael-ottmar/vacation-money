@@ -25,7 +25,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-background border border-border-light rounded-xl p-8 w-[75vw] max-w-4xl max-h-[80vh] overflow-y-auto">
+      <div className="bg-background border border-border-light rounded-xl p-8 w-[75vw] max-w-4xl h-[85vh] max-h-[900px] overflow-y-auto">
         <div className="flex items-center justify-between mb-6 pb-4 border-b border-border-light">
           <h2 className="text-xl font-bold">Strategy Settings</h2>
           <div className="flex items-center gap-3">
@@ -170,7 +170,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             </div>
             <div>
               <label className="block mb-2 text-muted text-sm">Time Zone</label>
-              <select className="w-full bg-card-hover border border-border-light text-white p-2.5 rounded-md h-[42px]">
+              <select className="w-full bg-card-hover border border-border-light text-white p-2.5 rounded-md" style={{ height: '42px' }}>
                 <option value="ET">Eastern Time</option>
                 <option value="CT">Central Time</option>
                 <option value="MT">Mountain Time</option>
