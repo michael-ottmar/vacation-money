@@ -1,4 +1,5 @@
 // Market data service for fetching prices from various APIs
+import { RateLimiter } from '../utils/rateLimiter'
 
 // CoinGecko API (free tier, no API key required)
 const COINGECKO_BASE_URL = 'https://api.coingecko.com/api/v3'
@@ -61,7 +62,8 @@ const CRYPTO_ID_MAP: Record<string, string> = {
 
 export class MarketDataService {
   private cache: Map<string, { data: MarketPrice; timestamp: number }> = new Map()
-  private cacheTimeout = 60000 // 1 minute cache
+  private cacheTimeout = 120000 // 2 minute cache to reduce API calls
+  private rateLimiter = new RateLimiter(5, 60000) // 5 requests per minute to stay well within limits
 
   // Get price for a single symbol (auto-detects crypto vs stock)
   async getPrice(symbol: string): Promise<MarketPrice | null> {
@@ -108,6 +110,12 @@ export class MarketDataService {
       const geckoId = CRYPTO_ID_MAP[symbol.toUpperCase()]
       if (!geckoId) return null
 
+      // Check rate limit
+      if (!this.rateLimiter.canMakeRequest()) {
+        console.warn('Rate limit exceeded, using cached data')
+        return null
+      }
+
       const response = await fetch(
         `${COINGECKO_BASE_URL}/simple/price?ids=${geckoId}&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true&include_market_cap=true`
       )
@@ -145,6 +153,12 @@ export class MarketDataService {
     if (symbols.length === 0) return results
 
     try {
+      // Check rate limit
+      if (!this.rateLimiter.canMakeRequest()) {
+        console.warn('Rate limit exceeded, using cached data')
+        return results
+      }
+
       const geckoIds = symbols
         .map(s => CRYPTO_ID_MAP[s.toUpperCase()])
         .filter(Boolean)

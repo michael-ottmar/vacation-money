@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Settings, MessageCircle, Plus, User } from 'lucide-react'
+import { Settings, MessageCircle, Plus, User, RefreshCw } from 'lucide-react'
 import { PositionCard } from './components/PositionCard'
 import { WatchlistItem } from './components/WatchlistItem'
 import { ChatPanel } from './components/ChatPanel'
@@ -8,6 +8,7 @@ import { AddPositionModal } from './components/AddPositionModal'
 import { AddToWatchlistModal } from './components/AddToWatchlistModal'
 import { ReportSaleModal } from './components/ReportSaleModal'
 import { MarketStatus } from './components/MarketStatus'
+import { LoadingSpinner } from './components/LoadingSpinner'
 import { cn } from './lib/utils'
 import { useApp } from './context/AppContext'
 import type { Position } from './types'
@@ -24,6 +25,7 @@ function App() {
     settings,
     marketDataLoading,
     lastMarketUpdate,
+    refreshMarketData,
     reportSale,
     addToWatchlist,
     removeFromWatchlist,
@@ -215,13 +217,28 @@ function App() {
                 </button>
               </div>
               {activeTab === 'active' && (
-                <button 
-                  onClick={() => setShowAddPosition(true)}
-                  className="bg-transparent border border-border-light hover:border-border-lighter text-muted hover:text-white px-3 py-1.5 rounded-md text-sm flex items-center gap-1 transition-colors"
-                >
-                  <Plus className="w-3 h-3" />
-                  Add
-                </button>
+                <div className="flex items-center gap-2">
+                  <button 
+                    onClick={refreshMarketData}
+                    disabled={marketDataLoading}
+                    className="bg-transparent border border-border-light hover:border-border-lighter text-muted hover:text-white px-3 py-1.5 rounded-md text-sm flex items-center gap-1 transition-colors disabled:opacity-50"
+                    title="Refresh prices"
+                  >
+                    {marketDataLoading ? (
+                      <LoadingSpinner size="sm" />
+                    ) : (
+                      <RefreshCw className="w-3 h-3" />
+                    )}
+                    Refresh
+                  </button>
+                  <button 
+                    onClick={() => setShowAddPosition(true)}
+                    className="bg-transparent border border-border-light hover:border-border-lighter text-muted hover:text-white px-3 py-1.5 rounded-md text-sm flex items-center gap-1 transition-colors"
+                  >
+                    <Plus className="w-3 h-3" />
+                    Add
+                  </button>
+                </div>
               )}
             </div>
             
@@ -314,7 +331,10 @@ function App() {
                 key={item.symbol} 
                 {...item}
                 onRemove={() => removeFromWatchlist(item.symbol)}
-                onTransfer={() => console.log('Transfer to positions:', item.symbol)}
+                onTransfer={() => {
+                  setPrefilledSymbol(item.symbol)
+                  setShowAddPosition(true)
+                }}
               />
             ))}
 
@@ -324,7 +344,10 @@ function App() {
                 key={item.symbol} 
                 {...item}
                 onRemove={() => removeFromWatchlist(item.symbol)}
-                onTransfer={() => console.log('Transfer to positions:', item.symbol)}
+                onTransfer={() => {
+                  setPrefilledSymbol(item.symbol)
+                  setShowAddPosition(true)
+                }}
               />
             ))}
           </div>

@@ -1,20 +1,23 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { marketDataService, type MarketPrice } from '../services/marketData'
 
 interface UseMarketDataOptions {
   refreshInterval?: number // in milliseconds
   enabled?: boolean
+  pauseWhenHidden?: boolean // pause updates when tab is not visible
 }
 
 export function useMarketData(
   symbols: string[],
   options: UseMarketDataOptions = {}
 ) {
-  const { refreshInterval = 60000, enabled = true } = options // Default 1 minute refresh
+  const { refreshInterval = 60000, enabled = true, pauseWhenHidden = true } = options
   const [prices, setPrices] = useState<Map<string, MarketPrice>>(new Map())
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
+  const [isDocumentVisible, setIsDocumentVisible] = useState(!document.hidden)
+  const intervalRef = useRef<NodeJS.Timeout | null>(null)
 
   const fetchPrices = useCallback(async () => {
     if (!enabled || symbols.length === 0) return
@@ -34,6 +37,22 @@ export function useMarketData(
     }
   }, [symbols.join(','), enabled]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Handle document visibility changes
+  useEffect(() => {
+    if (!pauseWhenHidden) return
+
+    const handleVisibilityChange = () => {
+      setIsDocumentVisible(!document.hidden)
+      // Fetch immediately when tab becomes visible
+      if (!document.hidden && enabled) {
+        fetchPrices()
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+  }, [pauseWhenHidden, enabled, fetchPrices])
+
   // Initial fetch
   useEffect(() => {
     fetchPrices()
@@ -42,10 +61,23 @@ export function useMarketData(
   // Set up refresh interval
   useEffect(() => {
     if (!enabled || !refreshInterval) return
+    
+    // Clear existing interval
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current)
+    }
 
-    const interval = setInterval(fetchPrices, refreshInterval)
-    return () => clearInterval(interval)
-  }, [fetchPrices, refreshInterval, enabled])
+    // Only set interval if document is visible or pauseWhenHidden is false
+    if (!pauseWhenHidden || isDocumentVisible) {
+      intervalRef.current = setInterval(fetchPrices, refreshInterval)
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current)
+      }
+    }
+  }, [fetchPrices, refreshInterval, enabled, pauseWhenHidden, isDocumentVisible])
 
   const refresh = useCallback(() => {
     fetchPrices()

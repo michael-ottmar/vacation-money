@@ -40,6 +40,7 @@ interface AppContextType {
   marketDataLoading: boolean
   marketDataError: string | null
   lastMarketUpdate: Date | null
+  refreshMarketData: () => void
   
   // Actions
   addPosition: (position: Position) => void
@@ -81,10 +82,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
     prices: marketPrices, 
     loading: marketDataLoading,
     error: marketDataError,
-    lastUpdated: lastMarketUpdate
+    lastUpdated: lastMarketUpdate,
+    refresh: refreshMarketData
   } = useMarketData(positionSymbols, {
-    refreshInterval: 30000, // Refresh every 30 seconds
-    enabled: positionSymbols.length > 0
+    refreshInterval: 120000, // Refresh every 2 minutes to stay within free tier
+    enabled: positionSymbols.length > 0,
+    pauseWhenHidden: true // Pause updates when tab is not visible
   })
   
   // Update positions with real-time prices
@@ -200,6 +203,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     marketDataLoading,
     marketDataError,
     lastMarketUpdate,
+    refreshMarketData,
     addPosition,
     removePosition,
     reportSale,

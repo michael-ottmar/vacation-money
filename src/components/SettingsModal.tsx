@@ -1,5 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { X, BellOff, Bell, Clock } from 'lucide-react'
+import { DEFAULT_STRATEGY } from '../constants'
+import { useApp } from '../context/AppContext'
 
 interface SettingsModalProps {
   isOpen: boolean
@@ -7,19 +9,22 @@ interface SettingsModalProps {
 }
 
 export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
+  const { settings, updateSettings } = useApp()
   const [silenceAlerts, setSilenceAlerts] = useState(false)
-  const [selectedStrategy, setSelectedStrategy] = useState('default')
+  const [selectedStrategy, setSelectedStrategy] = useState(settings.strategyName)
+  const [strategyText, setStrategyText] = useState(settings.generalStrategy)
+  const [startingValue, setStartingValue] = useState(settings.startingValue)
+  const [goalValue, setGoalValue] = useState(settings.goalValue)
   
-  const defaultStrategy = `Swing trade high-momentum assets with a focus on:
-• Entry on breakouts with volume confirmation
-• Position sizing based on volatility (higher vol = smaller position)
-• Take profits in tranches: 25% at +10%, 50% at +25%, let the rest ride
-• Stop losses set based on key support levels, typically -15% to -20%
-• Focus on sectors with strong narratives (AI, Nuclear, RWA, etc.)
-• Hold core positions in market leaders while trading satellites
-• Rebalance when any position exceeds 30% of portfolio`
-  
-  const [strategyText, setStrategyText] = useState(defaultStrategy)
+  // Update local state when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedStrategy(settings.strategyName)
+      setStrategyText(settings.generalStrategy)
+      setStartingValue(settings.startingValue)
+      setGoalValue(settings.goalValue)
+    }
+  }, [isOpen, settings])
   
   if (!isOpen) return null
 
@@ -42,7 +47,15 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               </span>
             </button>
             <button 
-              onClick={() => console.log('Save settings')}
+              onClick={() => {
+                updateSettings({
+                  strategyName: selectedStrategy,
+                  generalStrategy: strategyText,
+                  startingValue,
+                  goalValue
+                })
+                onClose()
+              }}
               className="bg-primary hover:bg-primary-hover text-white px-4 py-1.5 rounded-md text-sm transition-colors"
             >
               Save
@@ -66,7 +79,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 onChange={(e) => {
                   setSelectedStrategy(e.target.value)
                   if (e.target.value === 'default') {
-                    setStrategyText(defaultStrategy)
+                    setStrategyText(DEFAULT_STRATEGY)
                   }
                   // In real app, would load saved strategies here
                 }}
@@ -99,7 +112,8 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 <input 
                   type="number" 
                   className="w-full bg-card-hover border border-border-light text-white p-2.5 pl-7 rounded-md"
-                  defaultValue="400000"
+                  value={startingValue}
+                  onChange={(e) => setStartingValue(Number(e.target.value))}
                   step="1000"
                 />
               </div>
@@ -111,7 +125,8 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 <input 
                   type="number" 
                   className="w-full bg-card-hover border border-border-light text-white p-2.5 pl-7 rounded-md"
-                  defaultValue="1100000"
+                  value={goalValue}
+                  onChange={(e) => setGoalValue(Number(e.target.value))}
                   step="10000"
                 />
               </div>
