@@ -6,6 +6,7 @@ interface GoalSelectionModalProps {
   isOpen: boolean
   onClose: () => void
   isChatOpen?: boolean
+  preselectedTicker?: string  // When coming from watchlist
   onOpenChat?: (context: { goalAmount: number | null; currentOptions: AIOption[] }) => void
   onSubmit?: (goal: {
     symbol: string
@@ -38,7 +39,7 @@ interface AIOption {
   }
 }
 
-export function GoalSelectionModal({ isOpen, onClose, isChatOpen, onOpenChat, onSubmit }: GoalSelectionModalProps) {
+export function GoalSelectionModal({ isOpen, onClose, isChatOpen, preselectedTicker, onOpenChat, onSubmit }: GoalSelectionModalProps) {
   const [selectedGoal, setSelectedGoal] = useState<number | null>(null)
   const [customGoal, setCustomGoal] = useState('')
   const [aiOptions, setAiOptions] = useState<AIOption[]>([])
@@ -68,9 +69,19 @@ export function GoalSelectionModal({ isOpen, onClose, isChatOpen, onOpenChat, on
     'Finalizing recommendations...'
   ]
   
+  // Handle preselected ticker from watchlist
+  useEffect(() => {
+    if (preselectedTicker && isOpen && !selectedGoal) {
+      // Auto-select $500 as default goal
+      setSelectedGoal(500)
+      // Generate options immediately with preselected ticker
+      generateAIOptionsWithTicker(preselectedTicker)
+    }
+  }, [preselectedTicker, isOpen])
+
   // Simulate AI analysis when goal is selected
   useEffect(() => {
-    if (selectedGoal && !aiOptions.length) {
+    if (selectedGoal && !aiOptions.length && !preselectedTicker) {
       setIsLoading(true)
       setLoadingStep(0)
       
@@ -154,6 +165,78 @@ export function GoalSelectionModal({ isOpen, onClose, isChatOpen, onOpenChat, on
     setAiOptions(mockOptions)
   }
   
+  const generateAIOptionsWithTicker = (ticker: string) => {
+    // Create options with preselected ticker first, then similar ones
+    const tickerData: Record<string, { name: string; price: number; sector: string }> = {
+      'ONDO': { name: 'Ondo Finance', price: 0.75, sector: 'defi' },
+      'MSTR': { name: 'MicroStrategy', price: 345.20, sector: 'bitcoin' },
+      'NXE': { name: 'NexGen Energy', price: 6.25, sector: 'nuclear' },
+      'RKLB': { name: 'Rocket Lab', price: 8.45, sector: 'space' },
+      'SUI': { name: 'Sui', price: 1.85, sector: 'layer1' },
+      'PLTR': { name: 'Palantir', price: 42.50, sector: 'ai' }
+    }
+    
+    const selected = tickerData[ticker] || { name: ticker, price: 100, sector: 'tech' }
+    
+    // Find similar stocks based on sector
+    const similarStocks: Record<string, string[]> = {
+      'defi': ['AAVE', 'UNI'],
+      'bitcoin': ['COIN', 'RIOT'],
+      'nuclear': ['CCJ', 'DNN'],
+      'space': ['SPCE', 'ASTS'],
+      'layer1': ['SOL', 'AVAX'],
+      'ai': ['NVDA', 'C3AI'],
+      'tech': ['AAPL', 'MSFT']
+    }
+    
+    const options: AIOption[] = [
+      {
+        symbol: ticker,
+        name: selected.name,
+        currentPrice: selected.price,
+        momentum: 'strong',
+        confidence: 92,
+        reason: `Your watchlist pick showing strong technicals and momentum`,
+        requiredInvestment: {
+          aggressive: selectedGoal! * 2.2,
+          balanced: selectedGoal! * 3.5,
+          conservative: selectedGoal! * 5.5
+        },
+        estimatedTime: {
+          aggressive: '2-4 weeks',
+          balanced: '1-3 months',
+          conservative: '3-6 months'
+        }
+      }
+    ]
+    
+    // Add 2 similar stocks
+    const similar = similarStocks[selected.sector] || similarStocks['tech']
+    similar.slice(0, 2).forEach((sym: string, idx: number) => {
+      options.push({
+        symbol: sym,
+        name: `Similar to ${ticker}`,
+        currentPrice: selected.price * (0.8 + Math.random() * 0.4),
+        momentum: idx === 0 ? 'moderate' : 'building',
+        confidence: 75 + Math.random() * 10,
+        reason: `Same sector play with ${idx === 0 ? 'established momentum' : 'emerging potential'}`,
+        requiredInvestment: {
+          aggressive: selectedGoal! * (2.5 + idx * 0.5),
+          balanced: selectedGoal! * (4 + idx * 0.5),
+          conservative: selectedGoal! * (6 + idx * 0.5)
+        },
+        estimatedTime: {
+          aggressive: '3-5 weeks',
+          balanced: '2-4 months',
+          conservative: '4-8 months'
+        }
+      })
+    })
+    
+    setAiOptions(options)
+    setIsLoading(false)
+  }
+  
   const handleGoalSelect = (value: number | 'custom') => {
     if (value === 'custom') {
       setSelectedGoal(null)
@@ -175,6 +258,23 @@ export function GoalSelectionModal({ isOpen, onClose, isChatOpen, onOpenChat, on
     }
   }
   
+  const resetState = () => {
+    setSelectedGoal(null)
+    setCustomGoal('')
+    setAiOptions([])
+    setSelectedOption(null)
+    setSelectedTimeHorizon(null)
+    setIsLoading(false)
+    setLoadingStep(0)
+  }
+  
+  // Reset when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      resetState()
+    }
+  }, [isOpen])
+  
   const handleSubmit = () => {
     if (!selectedOption || !selectedTimeHorizon || !selectedGoal) return
     
@@ -193,11 +293,7 @@ export function GoalSelectionModal({ isOpen, onClose, isChatOpen, onOpenChat, on
     })
     
     // Reset state
-    setSelectedGoal(null)
-    setCustomGoal('')
-    setAiOptions([])
-    setSelectedOption(null)
-    setSelectedTimeHorizon(null)
+    resetState()
     onClose()
   }
   

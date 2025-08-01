@@ -40,6 +40,7 @@ function App() {
   const [activeTab, setActiveTab] = useState<'active' | 'history'>('active')
   const [showUserMenu, setShowUserMenu] = useState(false)
   const [chatContext, setChatContext] = useState<any>(null)
+  const [preselectedTicker, setPreselectedTicker] = useState<string | undefined>()
   
   // Calculate progress based on starting value + realized gains only
   const realizedProgress = settings.startingValue + portfolioStats.realizedGains
@@ -320,6 +321,7 @@ function App() {
                   {...item}
                   isAiSuggested={true}
                   onTransfer={() => {
+                    setPreselectedTicker(item.symbol)
                     setShowAddPosition(true)
                   }}
                 />
@@ -379,8 +381,10 @@ function App() {
         isOpen={showAddPosition} 
         onClose={() => {
           setShowAddPosition(false)
+          setPreselectedTicker(undefined)
         }}
         isChatOpen={showChat}
+        preselectedTicker={preselectedTicker}
         onOpenChat={(context) => {
           setChatContext({
             type: 'goal_suggestion',
