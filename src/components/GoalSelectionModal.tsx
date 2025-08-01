@@ -305,13 +305,13 @@ export function GoalSelectionModal({ isOpen, onClose, isChatOpen, preselectedTic
       isChatOpen && "pr-[calc(25%+40px)]"
     )}>
       <div className={cn(
-        "bg-background border border-border-light rounded-xl h-[90vh] max-h-[900px] mx-4 overflow-y-auto transition-all duration-300",
+        "bg-background border border-border-light rounded-xl h-[90vh] max-h-[900px] mx-4 flex flex-col transition-all duration-300",
         isChatOpen 
           ? "w-[75vw] max-w-4xl" 
           : "w-[90vw] max-w-5xl"
       )}>
-        {/* Header */}
-        <div className="flex justify-between items-center p-5 border-b border-border-light">
+        {/* Fixed Header */}
+        <div className="flex justify-between items-center p-5 border-b border-border-light flex-shrink-0">
           <h2 className="text-xl font-bold flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-primary" />
             Create New Goal
@@ -324,8 +324,8 @@ export function GoalSelectionModal({ isOpen, onClose, isChatOpen, preselectedTic
           </button>
         </div>
         
-        {/* Content */}
-        <div className="p-5">
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto p-5">
           {/* Step 1: Goal Selection */}
           <div className="mb-8">
             <h3 className="text-lg font-semibold mb-4">Step 1: Select Your Goal Amount</h3>

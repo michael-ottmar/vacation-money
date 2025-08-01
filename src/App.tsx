@@ -42,15 +42,17 @@ function App() {
   const [chatContext, setChatContext] = useState<any>(null)
   const [preselectedTicker, setPreselectedTicker] = useState<string | undefined>()
   
-  // Calculate progress based on starting value + realized gains only
-  const realizedProgress = settings.startingValue + portfolioStats.realizedGains
+  // Calculate progress based on realized gains only (from closed positions)
+  const realizedGains = closedPositions.reduce((sum, pos) => {
+    const gain = (pos.closedPrice - pos.costBasis) * pos.quantity
+    return sum + gain
+  }, 0)
   
-  
-  // Calculate progress percentages based on realized gains only
-  const progressPercent = ((realizedProgress / portfolioStats.goalValue) * 100).toFixed(0)
-  const taxImpactOnRealized = portfolioStats.realizedGains * portfolioStats.taxRate
-  const afterTaxProgress = realizedProgress - taxImpactOnRealized
-  const afterTaxPercent = ((afterTaxProgress / portfolioStats.goalValue) * 100).toFixed(0)
+  // Calculate progress percentages
+  const progressPercent = Math.max(0, (realizedGains / portfolioStats.goalValue) * 100).toFixed(0)
+  const taxImpact = realizedGains * portfolioStats.taxRate
+  const afterTaxGains = realizedGains - taxImpact
+  const afterTaxPercent = Math.max(0, (afterTaxGains / portfolioStats.goalValue) * 100).toFixed(0)
 
 
   return (
@@ -83,23 +85,25 @@ function App() {
               {/* Unrealized goal bricks */}
               {positions.map((position, index) => {
                 const goalPercent = ((position.goalAmount || 0) / portfolioStats.goalValue) * 100
-                const startPercent = Number(progressPercent) + positions.slice(0, index).reduce((sum, p) => sum + ((p.goalAmount || 0) / portfolioStats.goalValue) * 100, 0)
+                const previousGoalsTotal = positions.slice(0, index).reduce((sum, p) => sum + ((p.goalAmount || 0) / portfolioStats.goalValue) * 100, 0)
+                const startPercent = Number(progressPercent) + previousGoalsTotal
                 return (
                   <div
                     key={position.symbol + index}
-                    className="absolute top-0 h-full border-l-2 border-background/40"
+                    className="absolute top-0 h-full"
                     style={{
                       left: `${startPercent}%`,
                       width: `${goalPercent}%`,
-                      background: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.05) 10px, rgba(255,255,255,0.05) 20px)'
+                      background: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.05) 10px, rgba(255,255,255,0.05) 20px)',
+                      borderLeft: index === 0 && Number(progressPercent) > 0 ? '2px solid rgba(255,255,255,0.2)' : 'none'
                     }}
                     title={`${position.symbol}: $${position.goalAmount}`}
                   />
                 )
               })}
-              {/* Current realized progress on left */}
+              {/* Current realized gains on left (show 0 if no gains yet) */}
               <div className="absolute left-3 h-full flex items-center font-bold text-sm z-10">
-                ${(realizedProgress / 1000).toFixed(0)}K
+                ${realizedGains > 0 ? (realizedGains / 1000).toFixed(1) : '0'}K
               </div>
               {/* Goal value on right */}
               <div className="absolute right-3 h-full flex items-center font-bold text-sm z-10">
@@ -199,7 +203,7 @@ function App() {
           </div>
           <div className="bg-card border border-border rounded-lg p-4 text-center">
             <div className="text-xs text-muted mb-2">Tax Impact</div>
-            <div className="text-2xl font-bold">-${taxImpactOnRealized.toLocaleString()}</div>
+            <div className="text-2xl font-bold">-${taxImpact.toLocaleString()}</div>
             <div className="text-sm text-error mt-1">{(portfolioStats.taxRate * 100).toFixed(0)}% rate</div>
           </div>
         </div>
