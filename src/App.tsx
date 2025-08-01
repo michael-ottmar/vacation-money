@@ -380,6 +380,7 @@ function App() {
         onClose={() => {
           setShowAddPosition(false)
         }}
+        isChatOpen={showChat}
         onOpenChat={(context) => {
           setChatContext({
             type: 'goal_suggestion',

@@ -5,6 +5,7 @@ import { cn } from '../lib/utils'
 interface GoalSelectionModalProps {
   isOpen: boolean
   onClose: () => void
+  isChatOpen?: boolean
   onOpenChat?: (context: { goalAmount: number | null; currentOptions: AIOption[] }) => void
   onSubmit?: (goal: {
     symbol: string
@@ -37,7 +38,7 @@ interface AIOption {
   }
 }
 
-export function GoalSelectionModal({ isOpen, onClose, onOpenChat, onSubmit }: GoalSelectionModalProps) {
+export function GoalSelectionModal({ isOpen, onClose, isChatOpen, onOpenChat, onSubmit }: GoalSelectionModalProps) {
   const [selectedGoal, setSelectedGoal] = useState<number | null>(null)
   const [customGoal, setCustomGoal] = useState('')
   const [aiOptions, setAiOptions] = useState<AIOption[]>([])
@@ -203,8 +204,16 @@ export function GoalSelectionModal({ isOpen, onClose, onOpenChat, onSubmit }: Go
   if (!isOpen) return null
   
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-background border border-border-light rounded-xl w-[90vw] max-w-5xl h-[90vh] max-h-[900px] mx-4 overflow-y-auto">
+    <div className={cn(
+      "fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 transition-all duration-300",
+      isChatOpen && "pr-[calc(25%+40px)]"
+    )}>
+      <div className={cn(
+        "bg-background border border-border-light rounded-xl h-[90vh] max-h-[900px] mx-4 overflow-y-auto transition-all duration-300",
+        isChatOpen 
+          ? "w-[75vw] max-w-4xl" 
+          : "w-[90vw] max-w-5xl"
+      )}>
         {/* Header */}
         <div className="flex justify-between items-center p-5 border-b border-border-light">
           <h2 className="text-xl font-bold flex items-center gap-2">

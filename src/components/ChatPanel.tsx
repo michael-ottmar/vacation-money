@@ -10,7 +10,7 @@ interface ChatPanelProps {
 export function ChatPanel({ isOpen, onClose, context }: ChatPanelProps) {
   return (
     <div className={cn(
-      "fixed right-0 top-0 w-[calc(25%+40px)] min-w-[400px] max-w-[500px] h-screen bg-background border-l border-border-light transition-transform duration-300 z-50 flex flex-col",
+      "fixed right-0 top-0 w-[calc(25%+40px)] min-w-[400px] max-w-[500px] h-screen bg-background border-l border-border-light transition-transform duration-300 z-[60] flex flex-col",
       isOpen ? "translate-x-0" : "translate-x-full"
     )}>
       {/* Header - aligned to match main header height */}
