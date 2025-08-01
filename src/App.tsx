@@ -39,6 +39,7 @@ function App() {
   const [selectedPositionForSale, setSelectedPositionForSale] = useState<Position | null>(null)
   const [activeTab, setActiveTab] = useState<'active' | 'history'>('active')
   const [showUserMenu, setShowUserMenu] = useState(false)
+  const [chatContext, setChatContext] = useState<any>(null)
   
   // Calculate progress based on starting value + realized gains only
   const realizedProgress = settings.startingValue + portfolioStats.realizedGains
@@ -357,7 +358,14 @@ function App() {
 
 
       {/* Modals */}
-      <ChatPanel isOpen={showChat} onClose={() => setShowChat(false)} />
+      <ChatPanel 
+        isOpen={showChat} 
+        onClose={() => {
+          setShowChat(false)
+          setChatContext(null)
+        }}
+        context={chatContext}
+      />
       <SettingsModal isOpen={showSettings} onClose={() => setShowSettings(false)} />
       <AddToWatchlistModal 
         isOpen={showAddToWatchlist}
@@ -371,6 +379,14 @@ function App() {
         isOpen={showAddPosition} 
         onClose={() => {
           setShowAddPosition(false)
+        }}
+        onOpenChat={(context) => {
+          setChatContext({
+            type: 'goal_suggestion',
+            goalAmount: context.goalAmount,
+            currentOptions: context.currentOptions
+          })
+          setShowChat(true)
         }}
         onSubmit={(goal) => {
           const position: Position = {

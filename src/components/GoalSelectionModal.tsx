@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
-import { X, Sparkles, TrendingUp, Clock, DollarSign, ChevronRight, AlertCircle } from 'lucide-react'
+import { X, Sparkles, TrendingUp, Clock, DollarSign, ChevronRight, AlertCircle, MessageCircle, Plus } from 'lucide-react'
 import { cn } from '../lib/utils'
 
 interface GoalSelectionModalProps {
   isOpen: boolean
   onClose: () => void
+  onOpenChat?: (context: { goalAmount: number | null; currentOptions: AIOption[] }) => void
   onSubmit?: (goal: {
     symbol: string
     goalAmount: number
@@ -36,7 +37,7 @@ interface AIOption {
   }
 }
 
-export function GoalSelectionModal({ isOpen, onClose, onSubmit }: GoalSelectionModalProps) {
+export function GoalSelectionModal({ isOpen, onClose, onOpenChat, onSubmit }: GoalSelectionModalProps) {
   const [selectedGoal, setSelectedGoal] = useState<number | null>(null)
   const [customGoal, setCustomGoal] = useState('')
   const [aiOptions, setAiOptions] = useState<AIOption[]>([])
@@ -327,6 +328,16 @@ export function GoalSelectionModal({ isOpen, onClose, onSubmit }: GoalSelectionM
                       </div>
                     </button>
                   ))}
+                  
+                  {/* Chat button for custom suggestions */}
+                  <button
+                    onClick={() => onOpenChat?.({ goalAmount: selectedGoal, currentOptions: aiOptions })}
+                    className="w-full bg-card border border-border-light hover:border-primary hover:bg-primary/5 rounded-lg p-4 transition-all flex items-center justify-center gap-3"
+                  >
+                    <MessageCircle className="w-5 h-5 text-primary" />
+                    <span className="font-medium">Suggest a different stock with Claude</span>
+                    <Plus className="w-4 h-4 text-muted" />
+                  </button>
                 </div>
               )}
             </div>
@@ -342,23 +353,26 @@ export function GoalSelectionModal({ isOpen, onClose, onSubmit }: GoalSelectionM
                     key={horizon}
                     onClick={() => setSelectedTimeHorizon(horizon)}
                     className={cn(
-                      "border rounded-lg p-4 transition-all",
+                      "border rounded-lg p-6 transition-all min-h-[200px]",
                       selectedTimeHorizon === horizon
                         ? "border-primary bg-primary/5"
                         : "border-border-light hover:border-border-lighter hover:bg-card-hover"
                     )}
                   >
-                    <div className="text-center">
-                      <div className="font-semibold capitalize mb-2">{horizon}</div>
-                      <div className="text-2xl font-bold text-primary mb-2">
-                        ${selectedOption.requiredInvestment[horizon].toLocaleString()}
-                      </div>
-                      <div className="text-sm text-muted flex items-center justify-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        {selectedOption.estimatedTime[horizon]}
-                      </div>
-                      <div className="text-xs text-muted mt-2">
-                        Stop Loss: {horizon === 'aggressive' ? '10%' : horizon === 'balanced' ? '15%' : '20%'}
+                    <div className="text-center h-full flex flex-col">
+                      <div className="font-semibold capitalize mb-4">{horizon}</div>
+                      <div className="flex-1 flex flex-col justify-center">
+                        <div className="text-sm text-muted mb-1">Invest:</div>
+                        <div className="text-2xl font-bold text-primary mb-3">
+                          ${selectedOption.requiredInvestment[horizon].toLocaleString()}
+                        </div>
+                        <div className="text-sm text-muted flex items-center justify-center gap-1 mb-2">
+                          <Clock className="w-3 h-3" />
+                          {selectedOption.estimatedTime[horizon]}
+                        </div>
+                        <div className="text-sm text-muted">
+                          Stop Loss: {horizon === 'aggressive' ? '10%' : horizon === 'balanced' ? '15%' : '20%'}
+                        </div>
                       </div>
                     </div>
                   </button>
