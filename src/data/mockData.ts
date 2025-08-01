@@ -8,43 +8,59 @@ export const mockUser: User = {
   initials: 'JD'
 }
 
-// Mock positions
+// Mock positions with goal amounts
 export const mockPositions: Position[] = [
   {
     symbol: 'SOL',
     price: 175.43,
     change: 5.2,
     costBasis: 140.00,
-    quantity: 285.7,
-    totalValue: 50122,
-    gain: 10122,
+    quantity: 10.71,
+    totalValue: 1879,
+    gain: 379,
     gainPercent: 25.3,
     stopLoss: -15,
-    takeProfit: 50
+    takeProfit: 33.3,
+    goalAmount: 500
   },
   {
-    symbol: 'LINK',
-    price: 17.82,
+    symbol: 'NVDA',
+    price: 485.20,
     change: -2.1,
-    costBasis: 16.50,
-    quantity: 3636,
-    totalValue: 64793,
-    gain: 4793,
-    gainPercent: 8.0,
-    stopLoss: -20,
-    takeProfit: 100
+    costBasis: 450.00,
+    quantity: 4.44,
+    totalValue: 2154,
+    gain: 154,
+    gainPercent: 7.8,
+    stopLoss: -10,
+    takeProfit: 11.1,
+    goalAmount: 200
   },
   {
-    symbol: 'CCJ',
-    price: 52.15,
+    symbol: 'SOL',
+    price: 175.43,
+    change: 5.2,
+    costBasis: 140.00,
+    quantity: 10.71,
+    totalValue: 1879,
+    gain: 379,
+    gainPercent: 25.3,
+    stopLoss: -15,
+    takeProfit: 33.3,
+    goalAmount: 500
+  },
+  {
+    symbol: 'TSLA',
+    price: 245.60,
     change: 3.8,
-    costBasis: 48.00,
-    quantity: 416,
-    totalValue: 21694,
-    gain: 1726,
-    gainPercent: 8.6,
-    stopLoss: -25,
-    takeProfit: 150
+    costBasis: 230.00,
+    quantity: 3.48,
+    totalValue: 854,
+    gain: 54,
+    gainPercent: 6.8,
+    stopLoss: -20,
+    takeProfit: 12.5,
+    goalAmount: 100
   }
 ]
 

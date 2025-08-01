@@ -13,6 +13,7 @@ interface PositionCardProps {
   gainPercent: number
   stopLoss: number
   takeProfit: number
+  goalAmount?: number  // New prop for the goal amount ($100, $200, $500, etc.)
   onReportSale?: () => void
   onOpenChat?: (context: { symbol: string; metrics: any }) => void
   buttonText?: string
@@ -46,6 +47,7 @@ export function PositionCard({
   gainPercent,
   stopLoss,
   takeProfit,
+  goalAmount = 500,  // Default to $500 if not specified
   onReportSale,
   onOpenChat,
   buttonText = 'Report Sale',
@@ -56,10 +58,6 @@ export function PositionCard({
   
   const isPositive = change >= 0
   const isGainPositive = gain >= 0
-  
-  // Calculate target value and progress
-  const targetGain = totalValue * (takeProfit / 100)
-  const stopLossValue = totalValue * (Math.abs(stopLoss) / 100)
   
   // Calculate progress towards target
   const progressToTarget = Math.min(100, Math.max(0, (gainPercent / takeProfit) * 100))
@@ -187,13 +185,10 @@ export function PositionCard({
             }
           </button>
           
-          {/* Target value display */}
+          {/* Goal amount display */}
           <div className="relative z-10 flex-1 flex flex-col items-center justify-center">
-            <div className={cn(
-              "text-2xl font-bold mb-1",
-              gainPercent >= 0 ? "text-success" : "text-error"
-            )}>
-              {gainPercent >= 0 ? '+' : '-'} ${Math.abs(gainPercent >= 0 ? targetGain : stopLossValue).toLocaleString()}
+            <div className="text-2xl font-bold mb-1 text-success">
+              + ${goalAmount}
             </div>
           </div>
           

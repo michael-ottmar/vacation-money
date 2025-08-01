@@ -18,6 +18,7 @@ export interface Position {
   gainPercent: number
   stopLoss: number
   takeProfit: number
+  goalAmount?: number  // The goal amount for this position ($100, $200, $500, etc.)
 }
 
 export interface ClosedPosition extends Position {

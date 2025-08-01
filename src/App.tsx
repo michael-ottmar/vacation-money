@@ -4,7 +4,7 @@ import { PositionCard } from './components/PositionCard'
 import { WatchlistItem } from './components/WatchlistItem'
 import { ChatPanel } from './components/ChatPanel'
 import { SettingsModal } from './components/SettingsModal'
-import { AddPositionModal } from './components/AddPositionModal'
+import { GoalSelectionModal } from './components/GoalSelectionModal'
 import { AddToWatchlistModal } from './components/AddToWatchlistModal'
 import { ReportSaleModal } from './components/ReportSaleModal'
 import { MarketStatus } from './components/MarketStatus'
@@ -39,9 +39,6 @@ function App() {
   const [selectedPositionForSale, setSelectedPositionForSale] = useState<Position | null>(null)
   const [activeTab, setActiveTab] = useState<'active' | 'history'>('active')
   const [showUserMenu, setShowUserMenu] = useState(false)
-  const [prefilledSymbol, setPrefilledSymbol] = useState<string>('')
-  const [prefilledStopLoss, setPrefilledStopLoss] = useState<number | undefined>()
-  const [prefilledTakeProfit, setPrefilledTakeProfit] = useState<number | undefined>()
   
   // Calculate progress based on starting value + realized gains only
   const realizedProgress = settings.startingValue + portfolioStats.realizedGains
@@ -59,7 +56,7 @@ function App() {
       <header className="fixed top-0 left-0 right-0 bg-background z-40 border-b border-border-light">
         <div className="max-w-[1400px] mx-auto p-5 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <h1 className="text-2xl font-bold">Goal Tracker</h1>
+            <h1 className="text-2xl font-bold">Portfolio Tracker</h1>
             <MarketStatus 
               isLive={!marketDataLoading}
               lastUpdated={lastMarketUpdate}
@@ -191,6 +188,15 @@ function App() {
         <div className="grid grid-cols-4 gap-5">
           {/* Positions Section */}
           <div className="col-span-3 bg-card border border-border rounded-xl p-5">
+            {/* Total display for active positions */}
+            {activeTab === 'active' && positions.length > 0 && (
+              <div className="mb-4 text-right">
+                <span className="text-sm text-muted">Total ({positions.length}): </span>
+                <span className="text-xl font-bold">
+                  ${positions.reduce((sum, pos) => sum + (pos.goalAmount || 500), 0).toLocaleString()}
+                </span>
+              </div>
+            )}
             <div className="flex justify-between items-center mb-5">
               <div className="flex gap-4">
                 <button
@@ -236,7 +242,7 @@ function App() {
                     className="bg-transparent border border-border-light hover:border-border-lighter text-muted hover:text-white px-3 py-1.5 rounded-md text-sm flex items-center gap-1 transition-colors"
                   >
                     <Plus className="w-3 h-3" />
-                    Add
+                    Add Goal
                   </button>
                 </div>
               )}
@@ -247,7 +253,8 @@ function App() {
                 {positions.map((position) => (
                   <PositionCard 
                     key={position.symbol} 
-                    {...position} 
+                    {...position}
+                    goalAmount={position.goalAmount || 500}
                     onReportSale={() => setSelectedPositionForSale(position)}
                     onOpenChat={(context) => {
                       console.log('Opening chat with context:', context)
@@ -267,10 +274,7 @@ function App() {
                         buttonText="Repeat Trade"
                         buttonIcon="refresh"
                         onReportSale={() => {
-                          // Pre-fill the Add Position modal with the closed position's settings
-                          setPrefilledSymbol(position.symbol)
-                          setPrefilledStopLoss(position.stopLoss)
-                          setPrefilledTakeProfit(position.takeProfit)
+                          // Open goal selection modal for repeat trade
                           setShowAddPosition(true)
                         }}
                         onOpenChat={(context) => {
@@ -315,7 +319,6 @@ function App() {
                   {...item}
                   isAiSuggested={true}
                   onTransfer={() => {
-                    setPrefilledSymbol(item.symbol)
                     setShowAddPosition(true)
                   }}
                 />
@@ -332,7 +335,6 @@ function App() {
                 {...item}
                 onRemove={() => removeFromWatchlist(item.symbol)}
                 onTransfer={() => {
-                  setPrefilledSymbol(item.symbol)
                   setShowAddPosition(true)
                 }}
               />
@@ -345,7 +347,6 @@ function App() {
                 {...item}
                 onRemove={() => removeFromWatchlist(item.symbol)}
                 onTransfer={() => {
-                  setPrefilledSymbol(item.symbol)
                   setShowAddPosition(true)
                 }}
               />
@@ -366,29 +367,24 @@ function App() {
           setShowAddToWatchlist(false)
         }}
       />
-      <AddPositionModal 
+      <GoalSelectionModal 
         isOpen={showAddPosition} 
         onClose={() => {
           setShowAddPosition(false)
-          setPrefilledSymbol('')
-          setPrefilledStopLoss(undefined)
-          setPrefilledTakeProfit(undefined)
         }}
-        prefilledSymbol={prefilledSymbol}
-        prefilledStopLoss={prefilledStopLoss}
-        prefilledTakeProfit={prefilledTakeProfit}
-        onSubmit={(newPos) => {
+        onSubmit={(goal) => {
           const position: Position = {
-            symbol: newPos.symbol,
-            price: newPos.costBasis,
+            symbol: goal.symbol,
+            price: goal.costBasis,
             change: 0,
-            costBasis: newPos.costBasis,
-            quantity: newPos.quantity,
-            totalValue: newPos.costBasis * newPos.quantity,
+            costBasis: goal.costBasis,
+            quantity: goal.quantity,
+            totalValue: goal.investmentAmount,
             gain: 0,
             gainPercent: 0,
-            stopLoss: -15,
-            takeProfit: newPos.takeProfit || 50
+            stopLoss: goal.stopLoss || -15,
+            takeProfit: goal.takeProfit || 50,
+            goalAmount: goal.goalAmount
           }
           addPosition(position)
           setShowAddPosition(false)
