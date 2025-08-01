@@ -52,10 +52,14 @@ export interface MarketMetrics {
 
 // Strategy Settings
 export interface StrategySettings {
+  portfolioName?: string
   strategyName: string
   generalStrategy: string
   startingValue: number
   goalValue: number
+  goalContext?: string
+  pacePreference?: 'fast' | 'steady' | 'patient'
+  openInstructions?: string
   riskTolerance: 'Conservative' | 'Moderate' | 'Aggressive'
   estimatedTaxRate: number
   morningAnalysisTime: string | null

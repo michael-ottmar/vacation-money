@@ -45,6 +45,7 @@ function App() {
   // Calculate progress based on starting value + realized gains only
   const realizedProgress = settings.startingValue + portfolioStats.realizedGains
   
+  
   // Calculate progress percentages based on realized gains only
   const progressPercent = ((realizedProgress / portfolioStats.goalValue) * 100).toFixed(0)
   const taxImpactOnRealized = portfolioStats.realizedGains * portfolioStats.taxRate
@@ -58,7 +59,7 @@ function App() {
       <header className="fixed top-0 left-0 right-0 bg-background z-40 border-b border-border-light">
         <div className="max-w-[1400px] mx-auto p-5 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <h1 className="text-2xl font-bold">Portfolio Tracker</h1>
+            <h1 className="text-2xl font-bold">{settings.portfolioName || 'Portfolio Tracker'}</h1>
             <MarketStatus 
               isLive={!marketDataLoading}
               lastUpdated={lastMarketUpdate}
@@ -71,20 +72,37 @@ function App() {
             <div className="bg-card-hover h-8 rounded-full overflow-hidden relative">
               {/* Tax adjusted progress (darker) */}
               <div 
-                className="absolute top-0 left-0 bg-gray-700 h-full"
+                className="absolute top-0 left-0 bg-gray-700 h-full transition-all duration-500"
                 style={{ width: `${afterTaxPercent}%` }}
               />
               {/* Actual progress */}
               <div 
-                className="absolute top-0 left-0 bg-gradient-to-r from-primary to-green-500 h-full"
+                className="absolute top-0 left-0 bg-gradient-to-r from-primary to-green-500 h-full transition-all duration-500"
                 style={{ width: `${progressPercent}%` }}
               />
+              {/* Unrealized goal bricks */}
+              {positions.map((position, index) => {
+                const goalPercent = ((position.goalAmount || 0) / portfolioStats.goalValue) * 100
+                const startPercent = Number(progressPercent) + positions.slice(0, index).reduce((sum, p) => sum + ((p.goalAmount || 0) / portfolioStats.goalValue) * 100, 0)
+                return (
+                  <div
+                    key={position.symbol + index}
+                    className="absolute top-0 h-full border-l-2 border-background/40"
+                    style={{
+                      left: `${startPercent}%`,
+                      width: `${goalPercent}%`,
+                      background: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.05) 10px, rgba(255,255,255,0.05) 20px)'
+                    }}
+                    title={`${position.symbol}: $${position.goalAmount}`}
+                  />
+                )
+              })}
               {/* Current realized progress on left */}
-              <div className="absolute left-3 h-full flex items-center font-bold text-sm">
+              <div className="absolute left-3 h-full flex items-center font-bold text-sm z-10">
                 ${(realizedProgress / 1000).toFixed(0)}K
               </div>
               {/* Goal value on right */}
-              <div className="absolute right-3 h-full flex items-center font-bold text-sm">
+              <div className="absolute right-3 h-full flex items-center font-bold text-sm z-10">
                 ${(portfolioStats.goalValue / 1000).toFixed(0)}K
               </div>
             </div>
