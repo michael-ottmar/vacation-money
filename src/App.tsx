@@ -42,16 +42,12 @@ function App() {
   const [chatContext, setChatContext] = useState<any>(null)
   const [preselectedTicker, setPreselectedTicker] = useState<string | undefined>()
   
-  // Calculate progress based on realized gains only (from closed positions)
-  const realizedGains = closedPositions.reduce((sum, pos) => {
-    const gain = (pos.closedPrice - pos.costBasis) * pos.quantity
-    return sum + gain
-  }, 0)
+  // Use realized gains from portfolioStats which is calculated from closed positions
+  const realizedGains = portfolioStats.realizedGains
   
   // Calculate progress percentages
   const progressPercent = Math.max(0, (realizedGains / portfolioStats.goalValue) * 100).toFixed(0)
-  const taxImpact = realizedGains * portfolioStats.taxRate
-  const afterTaxGains = realizedGains - taxImpact
+  const afterTaxGains = realizedGains - portfolioStats.taxImpact
   const afterTaxPercent = Math.max(0, (afterTaxGains / portfolioStats.goalValue) * 100).toFixed(0)
 
 
@@ -94,8 +90,9 @@ function App() {
                     style={{
                       left: `${startPercent}%`,
                       width: `${goalPercent}%`,
-                      background: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.05) 10px, rgba(255,255,255,0.05) 20px)',
-                      borderLeft: index === 0 && Number(progressPercent) > 0 ? '2px solid rgba(255,255,255,0.2)' : 'none'
+                      backgroundColor: 'rgba(34, 197, 94, 0.1)', // green-500 at 10% opacity
+                      borderLeft: '1px solid rgba(156, 163, 175, 0.3)', // gray-400 at 30% opacity
+                      borderRight: '1px solid rgba(156, 163, 175, 0.3)'
                     }}
                     title={`${position.symbol}: $${position.goalAmount}`}
                   />
@@ -167,7 +164,10 @@ function App() {
         <div className="grid grid-cols-4 gap-5 mb-8">
           <div className="bg-card border border-border rounded-lg p-4 text-center">
             <div className="text-xs text-muted mb-2">Today's Change</div>
-            <div className="text-2xl font-bold">
+            <div className={cn(
+              "text-2xl font-bold",
+              portfolioStats.todaysChange >= 0 ? "text-success" : "text-error"
+            )}>
               {portfolioStats.todaysChange >= 0 ? '+' : ''}
               ${Math.abs(portfolioStats.todaysChange).toLocaleString()}
             </div>
@@ -203,7 +203,7 @@ function App() {
           </div>
           <div className="bg-card border border-border rounded-lg p-4 text-center">
             <div className="text-xs text-muted mb-2">Tax Impact</div>
-            <div className="text-2xl font-bold">-${taxImpact.toLocaleString()}</div>
+            <div className="text-2xl font-bold">-${portfolioStats.taxImpact.toLocaleString()}</div>
             <div className="text-sm text-error mt-1">{(portfolioStats.taxRate * 100).toFixed(0)}% rate</div>
           </div>
         </div>

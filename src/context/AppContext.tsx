@@ -6,8 +6,7 @@ import {
   mockClosedPositions, 
   mockAiRecommendations, 
   mockUserWatchlist,
-  mockUpcomingIPOs,
-  mockRealizedGains
+  mockUpcomingIPOs
 } from '../data/mockData'
 import { DEFAULT_STARTING_VALUE, DEFAULT_GOAL_VALUE, DEFAULT_TAX_RATE, DEFAULT_STRATEGY } from '../constants'
 import { useMarketData } from '../hooks/useMarketData'
@@ -57,7 +56,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [positions, setPositions] = useState<Position[]>(mockPositions)
   const [closedPositions, setClosedPositions] = useState<ClosedPosition[]>(mockClosedPositions)
   const [userWatchlist, setUserWatchlist] = useState<WatchlistItem[]>(mockUserWatchlist)
-  const [realizedGains, setRealizedGains] = useState<number>(mockRealizedGains)
   
   const [settings, setSettings] = useState<StrategySettings>({
     strategyName: 'Default Strategy',
@@ -111,20 +109,34 @@ export function AppProvider({ children }: { children: ReactNode }) {
   
   // Calculate portfolio stats using live prices
   const currentValue = positionsWithLivePrices.reduce((sum, pos) => sum + pos.totalValue, 0)
-  const totalValue = currentValue + realizedGains
-  const unrealizedGains = positionsWithLivePrices.reduce((sum, pos) => sum + pos.gain, 0)
-  const todaysChange = positionsWithLivePrices.reduce((sum, pos) => sum + (pos.totalValue * (pos.change / 100)), 0)
+  
+  // Calculate unrealized gains (current value - cost basis of active positions)
+  const totalCostBasis = positionsWithLivePrices.reduce((sum, pos) => sum + (pos.costBasis * pos.quantity), 0)
+  const unrealizedGains = currentValue - totalCostBasis
+  
+  // Calculate today's change based on the price change percentage
+  const todaysChange = positionsWithLivePrices.reduce((sum, pos) => {
+    // Calculate the previous day's value: current value / (1 + change%)
+    const previousValue = pos.totalValue / (1 + pos.change / 100)
+    return sum + (pos.totalValue - previousValue)
+  }, 0)
+  
+  // Calculate realized gains from closed positions
+  const calculatedRealizedGains = closedPositions.reduce((sum, pos) => {
+    const gain = (pos.closedPrice - pos.costBasis) * pos.quantity
+    return sum + gain
+  }, 0)
   
   const portfolioStats: PortfolioStats = {
     currentValue,
     goalValue: settings.goalValue,
     todaysChange,
-    todaysChangePercent: (todaysChange / currentValue) * 100,
+    todaysChangePercent: currentValue > 0 ? (todaysChange / currentValue) * 100 : 0,
     unrealizedGains,
-    unrealizedGainsPercent: (unrealizedGains / currentValue) * 100,
-    realizedGains: realizedGains,
-    realizedGainsPercent: (realizedGains / settings.startingValue) * 100,
-    taxImpact: totalValue * settings.estimatedTaxRate,
+    unrealizedGainsPercent: totalCostBasis > 0 ? (unrealizedGains / totalCostBasis) * 100 : 0,
+    realizedGains: calculatedRealizedGains,
+    realizedGainsPercent: settings.startingValue > 0 ? (calculatedRealizedGains / settings.startingValue) * 100 : 0,
+    taxImpact: calculatedRealizedGains * settings.estimatedTaxRate,
     taxRate: settings.estimatedTaxRate
   }
   
@@ -144,13 +156,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const position = positions.find(p => p.symbol === symbol)
     if (!position) return
     
-    // Calculate profit/loss for this sale
-    const costBasisForSale = position.costBasis * quantity
-    const saleProceeds = salePrice * quantity
-    const profitLoss = saleProceeds - costBasisForSale
     
-    // Update realized gains
-    setRealizedGains(prev => prev + profitLoss)
     
     // Create closed position
     const closedPosition: ClosedPosition = {
