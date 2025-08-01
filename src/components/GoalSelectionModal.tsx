@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { X, Sparkles, TrendingUp, Clock, DollarSign, ChevronRight, AlertCircle, MessageCircle, Plus } from 'lucide-react'
 import { cn } from '../lib/utils'
+import { claudeService } from '../services/claude'
 
 interface GoalSelectionModalProps {
   isOpen: boolean
@@ -103,138 +104,88 @@ export function GoalSelectionModal({ isOpen, onClose, isChatOpen, preselectedTic
     }
   }, [selectedGoal])
   
-  const generateAIOptions = () => {
-    // Mock AI-generated options based on goal amount
-    const mockOptions: AIOption[] = [
-      {
-        symbol: 'NVDA',
-        name: 'NVIDIA',
-        currentPrice: 485.20,
-        momentum: 'strong',
-        confidence: 88,
-        reason: 'AI sector leader with strong earnings momentum and institutional buying',
-        requiredInvestment: {
-          aggressive: selectedGoal! * 2.5,
-          balanced: selectedGoal! * 4,
-          conservative: selectedGoal! * 6
-        },
-        estimatedTime: {
-          aggressive: '2-4 weeks',
-          balanced: '1-3 months',
-          conservative: '3-6 months'
-        }
-      },
-      {
-        symbol: 'SOL',
-        name: 'Solana',
-        currentPrice: 175.43,
-        momentum: 'moderate',
-        confidence: 75,
-        reason: 'Breaking key resistance with increasing DeFi activity',
-        requiredInvestment: {
-          aggressive: selectedGoal! * 3,
-          balanced: selectedGoal! * 5,
-          conservative: selectedGoal! * 8
-        },
-        estimatedTime: {
-          aggressive: '3-5 weeks',
-          balanced: '2-4 months',
-          conservative: '4-8 months'
-        }
-      },
-      {
-        symbol: 'TSLA',
-        name: 'Tesla',
-        currentPrice: 245.60,
-        momentum: 'building',
-        confidence: 82,
-        reason: 'Oversold conditions with upcoming Robotaxi catalyst',
-        requiredInvestment: {
-          aggressive: selectedGoal! * 2,
-          balanced: selectedGoal! * 3.5,
-          conservative: selectedGoal! * 5.5
-        },
-        estimatedTime: {
-          aggressive: '1-3 weeks',
-          balanced: '1-2 months',
-          conservative: '2-5 months'
-        }
-      }
-    ]
+  const generateAIOptions = async () => {
+    if (!selectedGoal) return
     
-    setAiOptions(mockOptions)
+    try {
+      // Get 3 different stock recommendations
+      const symbols = ['NVDA', 'SOL', 'TSLA'] // Default symbols, could be dynamic later
+      
+      const analysisPromises = symbols.map(symbol => 
+        claudeService.analyzeStockForGoal(symbol, selectedGoal)
+      )
+      
+      const results = await Promise.all(analysisPromises)
+      setAiOptions(results)
+    } catch (error) {
+      console.error('Failed to generate AI options:', error)
+      // Fallback to basic options if API fails
+      setAiOptions([
+        {
+          symbol: 'NVDA',
+          name: 'NVIDIA',
+          currentPrice: 485.20,
+          momentum: 'strong',
+          confidence: 88,
+          reason: 'Leading AI technology company',
+          requiredInvestment: {
+            aggressive: selectedGoal * 2.5,
+            balanced: selectedGoal * 4,
+            conservative: selectedGoal * 6
+          },
+          estimatedTime: {
+            aggressive: '2-4 weeks',
+            balanced: '1-3 months',
+            conservative: '3-6 months'
+          }
+        }
+      ])
+    }
   }
   
-  const generateAIOptionsWithTicker = (ticker: string) => {
-    // Create options with preselected ticker first, then similar ones
-    const tickerData: Record<string, { name: string; price: number; sector: string }> = {
-      'ONDO': { name: 'Ondo Finance', price: 0.75, sector: 'defi' },
-      'MSTR': { name: 'MicroStrategy', price: 345.20, sector: 'bitcoin' },
-      'NXE': { name: 'NexGen Energy', price: 6.25, sector: 'nuclear' },
-      'RKLB': { name: 'Rocket Lab', price: 8.45, sector: 'space' },
-      'SUI': { name: 'Sui', price: 1.85, sector: 'layer1' },
-      'PLTR': { name: 'Palantir', price: 42.50, sector: 'ai' }
-    }
+  const generateAIOptionsWithTicker = async (ticker: string) => {
+    if (!selectedGoal) return
     
-    const selected = tickerData[ticker] || { name: ticker, price: 100, sector: 'tech' }
-    
-    // Find similar stocks based on sector
-    const similarStocks: Record<string, string[]> = {
-      'defi': ['AAVE', 'UNI'],
-      'bitcoin': ['COIN', 'RIOT'],
-      'nuclear': ['CCJ', 'DNN'],
-      'space': ['SPCE', 'ASTS'],
-      'layer1': ['SOL', 'AVAX'],
-      'ai': ['NVDA', 'C3AI'],
-      'tech': ['AAPL', 'MSFT']
-    }
-    
-    const options: AIOption[] = [
-      {
+    try {
+      // Analyze the selected ticker
+      const mainAnalysis = await claudeService.analyzeStockForGoal(ticker, selectedGoal, 'User selected from watchlist')
+      
+      // Get similar stocks
+      const similarSymbols = await claudeService.getSimilarStocks(ticker)
+      
+      // Analyze similar stocks (take first 2)
+      const similarPromises = similarSymbols.slice(0, 2).map(symbol => 
+        claudeService.analyzeStockForGoal(symbol, selectedGoal, `Similar to ${ticker}`)
+      )
+      
+      const similarAnalyses = await Promise.all(similarPromises)
+      
+      // Combine all options
+      setAiOptions([mainAnalysis, ...similarAnalyses])
+      setIsLoading(false)
+    } catch (error) {
+      console.error('Failed to analyze ticker:', error)
+      // Fallback to basic option
+      setAiOptions([{
         symbol: ticker,
-        name: selected.name,
-        currentPrice: selected.price,
-        momentum: 'strong',
-        confidence: 92,
-        reason: `Your watchlist pick showing strong technicals and momentum`,
+        name: ticker,
+        currentPrice: 100,
+        momentum: 'moderate',
+        confidence: 75,
+        reason: 'Analysis in progress',
         requiredInvestment: {
-          aggressive: selectedGoal! * 2.2,
-          balanced: selectedGoal! * 3.5,
-          conservative: selectedGoal! * 5.5
+          aggressive: selectedGoal * 2.5,
+          balanced: selectedGoal * 4,
+          conservative: selectedGoal * 6
         },
         estimatedTime: {
           aggressive: '2-4 weeks',
           balanced: '1-3 months',
           conservative: '3-6 months'
         }
-      }
-    ]
-    
-    // Add 2 similar stocks
-    const similar = similarStocks[selected.sector] || similarStocks['tech']
-    similar.slice(0, 2).forEach((sym: string, idx: number) => {
-      options.push({
-        symbol: sym,
-        name: `Similar to ${ticker}`,
-        currentPrice: selected.price * (0.8 + Math.random() * 0.4),
-        momentum: idx === 0 ? 'moderate' : 'building',
-        confidence: 75 + Math.random() * 10,
-        reason: `Same sector play with ${idx === 0 ? 'established momentum' : 'emerging potential'}`,
-        requiredInvestment: {
-          aggressive: selectedGoal! * (2.5 + idx * 0.5),
-          balanced: selectedGoal! * (4 + idx * 0.5),
-          conservative: selectedGoal! * (6 + idx * 0.5)
-        },
-        estimatedTime: {
-          aggressive: '3-5 weeks',
-          balanced: '2-4 months',
-          conservative: '4-8 months'
-        }
-      })
-    })
-    
-    setAiOptions(options)
-    setIsLoading(false)
+      }])
+      setIsLoading(false)
+    }
   }
   
   const handleGoalSelect = (value: number | 'custom') => {
